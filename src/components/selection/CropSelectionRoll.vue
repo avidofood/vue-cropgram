@@ -37,23 +37,6 @@ export default {
         },
     },
     components: { RollElement },
-    computed: {
-        /**
-		 * That gives me all the time the highest order
-		 * of all pictures :)
-		 *
-		 * @return {integer}
-		 */
-        highestOrder() {
-            let order = 0;
-
-            this.items.forEach((item) => {
-                order = item.order > order ? item.order : order;
-            });
-
-            return order;
-        },
-    },
     methods: {
         /**
 		 * Unset the picture or set it.
