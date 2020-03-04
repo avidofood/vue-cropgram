@@ -15,6 +15,7 @@
             :items="sortedItems"
             :selection-text="selectionText"
             :current-view-id="currentViewId"
+            :highest-order="highestOrder"
             @setView="setView"
             @updateItems="setItems"
             @chooseFile="chooseFile"

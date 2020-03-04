@@ -7,10 +7,12 @@ export default {
 
             this.setViewId(this.currentViewId - 1);
 
+            const order = this.sortedItemOrder(id);
+
             this.remove(id);
 
             if (!this.isSortedItemsEmpty) {
-                this.recalculateOrder(this.sortedItemOrder(id));
+                this.recalculateOrder(order);
             }
 
             this.updateCurrentView();

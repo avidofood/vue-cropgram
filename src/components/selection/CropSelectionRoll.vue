@@ -35,6 +35,10 @@ export default {
             type: Number,
             required: true,
         },
+        highestOrder: {
+            type: Number,
+            required: true,
+        },
     },
     components: { RollElement },
     methods: {

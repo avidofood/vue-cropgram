@@ -11,6 +11,7 @@
                 <selection-roll
                     :items="items"
                     :current-view-id="currentViewId"
+                    :highest-order="highestOrder"
                     @setView="$emit('setView', $event)"
                     @updateItems="$emit('updateItems', $event)"
                 />
@@ -39,6 +40,10 @@ export default {
             required: true,
         },
         currentViewId: {
+            type: Number,
+            required: true,
+        },
+        highestOrder: {
             type: Number,
             required: true,
         },
