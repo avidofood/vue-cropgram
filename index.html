@@ -14,6 +14,25 @@
             background-color: #000000;
             font-family: 'Nunito', sans-serif;
         }
+
+        .cropper-wrapper{
+            width: 100%;
+        }
+        .cp-view{
+            height: 300px;
+        }
+        .cropper-container{
+            width: 100%;
+        }
+        @media (min-width: 576px){
+            .cropper-wrapper{
+                width: auto;
+            }
+
+            .cp-view{
+                width: 300px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -27,7 +46,7 @@
 
         <section class="container">
             <div class="d-flex justify-content-center align-items-center">
-                <div class="bg-white p-4 rounded">
+                <div class="bg-white p-4 rounded cropper-wrapper">
                     <crop-gram :items="pictures"></crop-gram>
                 </div>
             </div>
