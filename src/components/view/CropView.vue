@@ -1,7 +1,6 @@
 <template>
     <form
         class="cp-view"
-        style="width: 300px; height: 300px;"
         method="POST"
         enctype="multipart/form-data"
     >
@@ -12,9 +11,20 @@
             :src="cropper"
             :placeholder-font-size="14"
             @update="$emit('update', $event)"
-            @image-remove="$emit('image-remove')"
             @file-loaded="handleFileLoaded"
             @loading-end="handleLoadingEnd"
+
+            @init="$emit('init')"
+            @file-choose="$emit('file-choose')"
+            @file-size-exceed="$emit('file-size-exceed')"
+            @file-type-mismatch="$emit('file-type-mismatch')"
+            @new-image-drawn="$emit('new-image-drawn')"
+            @image-remove="$emit('image-remove')"
+            @move="$emit('move')"
+            @zoom="$emit('zoom')"
+            @draw="$emit('draw')"
+            @initial-image-loaded="$emit('initial-image-loaded')"
+            @loading-start="$emit('loading-start')"
         />
     </form>
 </template>
@@ -77,6 +87,8 @@ export default {
          * From this point on the image is fully loaded, and we can update the metadata
          */
         handleLoadingEnd() {
+            this.$emit('loading-end');
+
             if (!this.readSuccesfully) return;
 
             this.readSuccesfully = false;

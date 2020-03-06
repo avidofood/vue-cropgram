@@ -16,6 +16,8 @@ export default {
             }
 
             this.updateCurrentView();
+
+            this.$emit('image-remove');
         },
         handleNewImage(newValue) {
             const nextId = this.sortedItemsCount;
@@ -29,8 +31,12 @@ export default {
             this.setViewId(nextId);
 
             this.updateCurrentView();
+
+            this.$emit('new-image');
         },
         handleFileLoaded() {
+            this.$emit('file-loaded');
+
             if (this.isSortedItemsEmpty) return;
 
             this.updateCurrentSortedItem();

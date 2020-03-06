@@ -4,9 +4,21 @@
             <crop-view
                 ref="view"
                 :view="currentView"
+                @update="$emit('update', $event)"
                 @image-remove="handleImageRemove"
                 @new-image="handleNewImage"
                 @file-loaded="handleFileLoaded"
+
+                @init="$emit('init')"
+                @file-choose="$emit('file-choose')"
+                @file-size-exceed="$emit('file-size-exceed')"
+                @file-type-mismatch="$emit('file-type-mismatch')"
+                @new-image-drawn="$emit('new-image-drawn')"
+                @move="$emit('move')"
+                @zoom="$emit('zoom')"
+                @draw="$emit('draw')"
+                @initial-image-loaded="$emit('initial-image-loaded')"
+                @loading-start="$emit('loading-start')"
             />
             <slot />
         </div>
