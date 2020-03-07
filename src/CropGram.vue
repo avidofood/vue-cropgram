@@ -14,8 +14,8 @@
                 @file-size-exceed="$emit('file-size-exceed')"
                 @file-type-mismatch="$emit('file-type-mismatch')"
                 @new-image-drawn="$emit('new-image-drawn')"
-                @move="$emit('move')"
-                @zoom="$emit('zoom')"
+                @move="$emit('move');hasChanged();"
+                @zoom="$emit('zoom');hasChanged();"
                 @draw="$emit('draw')"
                 @initial-image-loaded="$emit('initial-image-loaded')"
                 @loading-start="$emit('loading-start')"
@@ -29,7 +29,7 @@
             :current-view-id="currentViewId"
             :highest-order="highestOrder"
             @setView="setView"
-            @updateItems="setItems"
+            @updateItems="setItems($event);hasChanged();"
             @chooseFile="chooseFile"
         />
     </div>
@@ -60,6 +60,7 @@ export default {
             currentViewId: -1,
             currentView: null,
             cropper: null,
+            valuesChanged: false,
         };
     },
     mounted() {
@@ -110,6 +111,10 @@ export default {
         },
         getCurrentCropperThumbnail() {
             return this.cropper.generateDataUrl();
+        },
+        hasChanged() {
+            this.valuesChanged = true;
+            this.$emit('has-changed');
         },
 
 
