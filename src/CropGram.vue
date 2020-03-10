@@ -4,6 +4,7 @@
             <crop-view
                 ref="view"
                 :view="currentView"
+                v-bind="$attrs"
                 @update="$emit('update', $event)"
                 @image-remove="handleImageRemove"
                 @new-image="handleNewImage"
@@ -46,7 +47,9 @@ import collection from './mixins/collection';
 import handleMethods from './mixins/handleMethods';
 
 export default {
-    props,
+    props: {
+        ...props,
+    },
     mixins: [
         collection,
         handleMethods,

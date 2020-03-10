@@ -6,10 +6,8 @@
     >
         <instagram-cropper
             ref="cropper"
-            placeholder-color="#000000"
-            placeholder="Choose or Drag'n'Drop an image"
             :src="cropper"
-            :placeholder-font-size="14"
+            v-bind="$attrs"
             @update="$emit('update', $event)"
             @file-loaded="handleFileLoaded"
             @loading-end="handleLoadingEnd"
