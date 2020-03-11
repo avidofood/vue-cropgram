@@ -1,4 +1,8 @@
 export default {
+    showCropper: {
+        type: Boolean,
+        default: true,
+    },
     items: {
         type: Array,
         required: false,
@@ -8,8 +12,16 @@ export default {
         type: String,
         default: 'Chosen Images',
     },
-    selectionClass: {
+    selectionTextClass: {
         type: String,
         default: '',
+    },
+    itemsLimit: {
+        type: Number,
+        default: 4,
+        note: 'Maximum of images',
+        validator(val) {
+            return val >= 0;
+        },
     },
 };

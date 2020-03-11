@@ -2,6 +2,7 @@
     <div class="cg-wrapper">
         <div class="cg-content">
             <crop-view
+                v-show="showCropper"
                 ref="view"
                 :view="currentView"
                 v-bind="$attrs"
@@ -26,7 +27,9 @@
 
         <crop-selection
             :items="sortedItems"
+            :items-limit="itemsLimit"
             :selection-text="selectionText"
+            :selection-text-class="selectionTextClass"
             :current-view-id="currentViewId"
             :highest-order="highestOrder"
             @setView="setView"
@@ -47,9 +50,7 @@ import collection from './mixins/collection';
 import handleMethods from './mixins/handleMethods';
 
 export default {
-    props: {
-        ...props,
-    },
+    props,
     mixins: [
         collection,
         handleMethods,
@@ -87,6 +88,58 @@ export default {
             this.add({
                 order, thumbnail, cropper, url,
             });
+        },
+        addNewUrl(url) {
+            const nextId = this.sortedItemsCount;
+
+            if (!url) return;
+
+            if (this.itemsLimit <= nextId) {
+                this.$emit('limit-reached');
+                return;
+            }
+
+            this.addItem(
+                this.highestOrder + 1,
+                url,
+                {},
+                url,
+            );
+
+
+            this.setViewId(nextId);
+
+            this.updateCurrentView();
+
+            this.$emit('new-image');
+
+            this.hasChanged();
+        },
+        addNewCropper(cropper) {
+            const nextId = this.sortedItemsCount;
+
+            if (!cropper || cropper === {}) return;
+
+            if (this.itemsLimit <= nextId) {
+                this.$emit('limit-reached');
+                return;
+            }
+
+
+            this.addItem(
+                this.highestOrder + 1,
+                this.getCurrentCropperThumbnail(),
+                cropper,
+            );
+
+
+            this.setViewId(nextId);
+
+            this.updateCurrentView();
+
+            this.$emit('new-image');
+
+            this.hasChanged();
         },
         setViewId(index) {
             this.currentViewId = index;

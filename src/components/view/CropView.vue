@@ -79,7 +79,6 @@ export default {
         handleFileLoaded() {
             this.$emit('file-loaded');
             this.readSuccesfully = true;
-            this.$refs.cropper.img = null; // small hack
         },
         /**
          * From this point on the image is fully loaded, and we can update the metadata

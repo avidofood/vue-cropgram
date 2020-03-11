@@ -4,7 +4,10 @@
             v-if="items.length > 0"
             class="cg-selection"
         >
-            <div class="cg-selection-text">
+            <div
+                class="cg-selection-text"
+                :class="selectionTextClass"
+            >
                 <small v-text="selectionText" />
             </div>
             <div class="cg-selection-row">
@@ -17,7 +20,7 @@
                 />
 
                 <selection-button
-                    v-if="items.length < 4"
+                    v-if="items.length < itemsLimit"
                     @clicked="$emit('chooseFile')"
                 />
             </div>
@@ -35,8 +38,15 @@ export default {
             type: String,
             required: true,
         },
+        selectionTextClass: {
+            type: String,
+        },
         items: {
             type: Array,
+            required: true,
+        },
+        itemsLimit: {
+            type: Number,
             required: true,
         },
         currentViewId: {

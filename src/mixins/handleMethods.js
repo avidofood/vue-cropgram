@@ -22,21 +22,7 @@ export default {
             this.hasChanged();
         },
         handleNewImage(newValue) {
-            const nextId = this.sortedItemsCount;
-
-            this.addItem(
-                this.highestOrder + 1,
-                this.getCurrentCropperThumbnail(),
-                newValue,
-            );
-
-            this.setViewId(nextId);
-
-            this.updateCurrentView();
-
-            this.$emit('new-image');
-
-            this.hasChanged();
+            this.addNewCropper(newValue);
         },
         handleFileLoaded() {
             this.$emit('file-loaded');
