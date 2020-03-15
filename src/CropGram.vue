@@ -10,15 +10,15 @@
                 @image-remove="handleImageRemove"
                 @new-image="handleNewImage"
                 @file-loaded="handleFileLoaded"
+                @move="handleMove"
+                @zoom="handleZoom"
+                @draw="handleDraw"
 
                 @init="$emit('init')"
                 @file-choose="$emit('file-choose')"
                 @file-size-exceed="$emit('file-size-exceed')"
                 @file-type-mismatch="$emit('file-type-mismatch')"
                 @new-image-drawn="$emit('new-image-drawn')"
-                @move="$emit('move');hasChanged();"
-                @zoom="$emit('zoom');hasChanged();"
-                @draw="$emit('draw')"
                 @initial-image-loaded="$emit('initial-image-loaded')"
                 @loading-start="$emit('loading-start')"
             />
@@ -48,12 +48,16 @@ import CropSelection from './components/selection/CropSelection.vue';
 
 import collection from './mixins/collection';
 import handleMethods from './mixins/handleMethods';
+import handleSaving from './mixins/handleSaving';
+import helpers from './mixins/helpers';
 
 export default {
     props,
     mixins: [
         collection,
         handleMethods,
+        handleSaving,
+        helpers,
     ],
     components: {
         CropView,
@@ -65,11 +69,12 @@ export default {
             currentView: null,
             cropper: null,
             valuesChanged: false,
+            blockChangeEvent: false, // Important for setView
         };
     },
     mounted() {
         this.items.forEach(
-            (item, index) => this.addItem(index + 1, item, {}, item, null),
+            (item, index) => this.addItem(index + 1, item, {}, item, false),
         );
         this.setFirstCurrentView();
         this.updateCurrentView();
@@ -84,9 +89,9 @@ export default {
 		 * @param {Object} cropper    [Contains Infos of the picture]
          * @param {string} url    [The url of the image]
 		 */
-        addItem(order, thumbnail, cropper = {}, url = '') {
+        addItem(order, thumbnail, cropper = {}, url = '', changed = false) {
             this.add({
-                order, thumbnail, cropper, url,
+                order, thumbnail, cropper, url, changed,
             });
         },
         addNewUrl(url) {
@@ -104,6 +109,7 @@ export default {
                 url,
                 {},
                 url,
+                false,
             );
 
 
@@ -130,6 +136,8 @@ export default {
                 this.highestOrder + 1,
                 this.getCurrentCropperThumbnail(),
                 cropper,
+                '',
+                true,
             );
 
 
@@ -151,16 +159,14 @@ export default {
             }
             this.setViewId(0);
         },
-        updateCurrentView() {
-            this.currentView = this.sortedItem(this.currentViewId);
-        },
-        updateCurrentSortedItem() {
-            this.sortedItem(this.currentViewId).cropper = this.cropper.getMetadata();
-        },
         setView(id) {
+            this.blockChangeEvent = true;
+
             this.updateCurrentSortedItem();
             this.setViewId(id);
             this.updateCurrentView();
+
+            this.$emit('set-view', id);
         },
         chooseFile() {
             this.cropper.chooseFile();
@@ -168,9 +174,8 @@ export default {
         getCurrentCropperThumbnail() {
             return this.cropper.generateDataUrl();
         },
-        hasChanged() {
-            this.valuesChanged = true;
-            this.$emit('has-changed');
+        save() {
+            return this.createOutputArray();
         },
 
 

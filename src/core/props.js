@@ -8,6 +8,14 @@ export default {
         required: false,
         default: () => [],
     },
+    mimeType: {
+        type: String,
+        default: 'image/jpeg',
+    },
+    compression: {
+        type: Number,
+        default: 0.8,
+    },
     selectionText: {
         type: String,
         default: 'Chosen Images',

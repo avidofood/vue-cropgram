@@ -31,5 +31,24 @@ export default {
 
             this.updateCurrentSortedItem();
         },
+        handleMove() {
+            if (this.blockChangeEvent) return;
+
+            this.$emit('move');
+            this.hasChanged();
+            this.setChanged();
+        },
+        handleZoom() {
+            if (this.blockChangeEvent) return;
+
+            this.$emit('zoom');
+            this.hasChanged();
+            this.setChanged();
+        },
+        handleDraw() {
+            this.$emit('draw');
+            // resets the blockChangeEvent
+            this.blockChangeEvent = false;
+        },
     },
 };
