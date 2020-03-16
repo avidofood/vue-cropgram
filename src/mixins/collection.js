@@ -57,5 +57,17 @@ export default {
 
             return order;
         },
+        /**
+         * Used when removing an image. To set a new view.
+         *
+         * @return  {integer}  [Previous index, or if not, next index or -1]
+         */
+        previousView() {
+            if (this.isSortedItemsEmpty || this.sortedItemsCount === 1) return -1;
+
+            if (this.sortedItemsCount > 1 && this.currentViewId === 0) return 0;
+
+            return this.currentViewId - 1;
+        },
     },
 };

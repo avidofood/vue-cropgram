@@ -14821,6 +14821,17 @@ var es_array_splice = __webpack_require__("a434");
         order = item.order > order ? item.order : order;
       });
       return order;
+    },
+
+    /**
+     * Used when removing an image. To set a new view.
+     *
+     * @return  {integer}  [Previous index, or if not, next index or -1]
+     */
+    previousView: function previousView() {
+      if (this.isSortedItemsEmpty || this.sortedItemsCount === 1) return -1;
+      if (this.sortedItemsCount > 1 && this.currentViewId === 0) return 0;
+      return this.currentViewId - 1;
     }
   }
 });
@@ -14831,7 +14842,7 @@ var es_array_splice = __webpack_require__("a434");
       if (this.isSortedItemsEmpty) return;
       var id = this.currentViewId; // save old id
 
-      this.setViewId(this.currentViewId - 1);
+      this.setViewId(this.previousView);
       var order = this.sortedItemOrder(id);
       this.remove(id);
 

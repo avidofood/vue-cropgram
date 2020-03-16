@@ -5,7 +5,7 @@ export default {
 
             const id = this.currentViewId; // save old id
 
-            this.setViewId(this.currentViewId - 1);
+            this.setViewId(this.previousView);
 
             const order = this.sortedItemOrder(id);
 
