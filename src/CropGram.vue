@@ -170,6 +170,7 @@ export default {
         },
         chooseFile() {
             this.cropper.chooseFile();
+            this.$emit('choose-file-button');
         },
         getCurrentCropperThumbnail() {
             return this.cropper.generateDataUrl();
