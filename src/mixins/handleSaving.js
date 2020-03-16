@@ -46,10 +46,9 @@ export default {
             const { img, imgData } = item.cropper;
             const { outputWidth, outputHeight } = this.cropper;
 
-            return {
-                blob: this.cropper.saving(img, imgData, outputWidth, outputHeight)
-                    .promisedBlob(this.mimeType, this.compression),
-            };
+            return this.cropper.saving(img, imgData, outputWidth, outputHeight)
+                .promisedBlob(this.mimeType, this.compression)
+                .then((blob) => ({ blob }));
         },
     },
 };

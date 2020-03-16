@@ -14964,9 +14964,14 @@ var modules_es_promise = __webpack_require__("e6cf");
       var _this$cropper = this.cropper,
           outputWidth = _this$cropper.outputWidth,
           outputHeight = _this$cropper.outputHeight;
-      return {
-        blob: this.cropper.saving(img, imgData, outputWidth, outputHeight).promisedBlob(this.mimeType, this.compression)
-      };
+      return this.cropper.saving(img, imgData, outputWidth, outputHeight).promisedBlob(this.mimeType, this.compression).then(function (blob) {
+        return {
+          blob: blob
+        };
+      }); // return {
+      //     blob: this.cropper.saving(img, imgData, outputWidth, outputHeight)
+      //         .promisedBlob(this.mimeType, this.compression),
+      // };
     }
   }
 });
