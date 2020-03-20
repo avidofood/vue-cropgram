@@ -1,7 +1,16 @@
 # Vue-Cropgram: Upload Images like in Instagram 🖼
 
+<a href="https://www.npmjs.com/package/vue-cropgram">
+  <img src="https://img.shields.io/npm/dt/vue-cropgram.svg" alt="Downloads">
+</a>
+<a href="https://www.npmjs.com/package/vue-cropgram">
+  <img src="https://img.shields.io/npm/v/vue-cropgram.svg" alt="Version">
+</a>
+<a href="https://www.npmjs.com/package/vue-cropgram">
+  <img src="https://img.shields.io/npm/l/vue-cropgram.svg" alt="License">
+</a>
 
-![Vue Instagram Cropper](/images/intro.png)
+<a href="https://avidofood.github.io/vue-cropgram"><img src="/images/intro.png" width="400" alt="try it out" /></a>
 
 **If you are only looking to crop images like in Instagram, please visit https://github.com/avidofood/vue-instagram-cropper😜**
 

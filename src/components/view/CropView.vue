@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import InstagramCropper from '/Users/shadrix/Dropbox/Business/Github/Packages/vue-instagram-cropper/src/index';
+import InstagramCropper from 'vue-instagram-cropper';
 
 export default {
     props: {
