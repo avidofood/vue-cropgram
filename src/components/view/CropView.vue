@@ -3,6 +3,7 @@
         class="cp-view"
         method="POST"
         enctype="multipart/form-data"
+        @submit.prevent
     >
         <instagram-cropper
             ref="cropper"
