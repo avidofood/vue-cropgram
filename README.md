@@ -131,7 +131,14 @@ createFormData() {
 - `setView(id)`: Sets a view with index
 - `addNewUrl(url)`: Sets an image via URL
  
-   
+## TODO
+
+I have only limited time to develop this package further. It would mean a lot to me, if you would help me to improve it step by step. This package contains my cropper package that also has a todo list. Have a look: [vue-instagram-cropper](https://github.com/avidofood/vue-instagram-cropper#todo) and here is a small list, what is still missing for this package:
+
+- If you want to use the slot in [vue-instagram-cropper](https://github.com/avidofood/vue-instagram-cropper#todo), we need to develiver the content there.
+- If you have multiple images and you remove one, you will see in a tiny fraction the placeholder text.
+- We need to lock the image aspect ratio. For that we need to add a the prop `forceAspect` but for [vue-instagram-cropper](https://github.com/avidofood/vue-instagram-cropper#todo). 
+- Do we need private methods like in [vue-instagram-cropper](https://github.com/avidofood/vue-instagram-cropper)?
  
 ## Security
 
