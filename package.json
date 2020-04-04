@@ -1,6 +1,6 @@
 {
   "name": "vue-cropgram",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Instagram Style Image Uploader for Vue",
   "main": "dist/index.common.js",
   "unpkg": "dist/index.umd.min.js",
@@ -40,6 +40,6 @@
     "sass-loader": "^8.0.2"
   },
   "dependencies": {
-    "vue-instagram-cropper": "^1.1.1"
+    "vue-instagram-cropper": "^1.1.4"
   }
 }

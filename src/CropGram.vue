@@ -21,6 +21,8 @@
                 @new-image-drawn="$emit('new-image-drawn')"
                 @initial-image-loaded="$emit('initial-image-loaded')"
                 @loading-start="$emit('loading-start')"
+                @loading-end="$emit('loading-end')"
+                @image-error="$emit('image-error')"
             />
             <slot />
         </div>
@@ -35,6 +37,7 @@
             @setView="setView"
             @updateItems="setItems($event);hasChanged();"
             @chooseFile="chooseFile"
+            @thumbnailError="handleThumbnailError"
         />
     </div>
 </template>

@@ -107,6 +107,7 @@ IMPORTANT: Same as for props, this package contains the events of https://avidof
 - `set-view`: Emitted when the view was changed
 - `limit-reached`: Emitted when the limit of `itemsLimit` was reached
 - `has-changed`: Emitted when images are added, moved, zoomed in/out or the order changed.
+- `thumbnail-error(index)`: Emitted when thumbnail is not loaded.
 
 ## Methods
 

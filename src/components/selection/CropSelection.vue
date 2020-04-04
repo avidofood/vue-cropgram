@@ -17,6 +17,7 @@
                     :highest-order="highestOrder"
                     @setView="$emit('setView', $event)"
                     @updateItems="$emit('updateItems', $event)"
+                    @thumbnailError="$emit('thumbnailError', $event)"
                 />
 
                 <selection-button

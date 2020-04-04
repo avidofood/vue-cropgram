@@ -19,6 +19,7 @@
             @file-type-mismatch="$emit('file-type-mismatch')"
             @new-image-drawn="$emit('new-image-drawn')"
             @image-remove="$emit('image-remove')"
+            @image-error="$emit('image-error')"
             @move="$emit('move')"
             @zoom="$emit('zoom')"
             @draw="$emit('draw')"

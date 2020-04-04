@@ -4,6 +4,7 @@
             :src="item.thumbnail"
             :class="[index === selected ? 'active': '']"
             @click="$emit('setView', index)"
+            @error="$emit('thumbnailError', index)"
         >
         <div
             class="roll-element-order"

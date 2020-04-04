@@ -17,6 +17,7 @@
                 :selected="currentViewId"
                 @toggle="toggleOrder($event)"
                 @setView="setView($event)"
+                @thumbnailError="$emit('thumbnailError', $event)"
             />
         </div>
     </transition-group>
