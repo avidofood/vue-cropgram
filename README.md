@@ -12,7 +12,7 @@
 
 <a href="https://avidofood.github.io/vue-cropgram"><img src="/images/intro.png" width="400" alt="try it out" /></a>
 
-**If you are only looking to crop images like in Instagram, please visit https://github.com/avidofood/vue-instagram-cropper😜**
+**If you are only looking to crop images like in Instagram, please visit https://github.com/avidofood/vue-instagram-cropper 😜**
 
 ## Installation in 2 Steps
 
