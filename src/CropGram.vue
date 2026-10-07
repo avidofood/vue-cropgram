@@ -1,31 +1,38 @@
 <template>
-    <div class="cg-wrapper">
+    <div
+        class="cg-wrapper"
+        :class="$attrs.class"
+        :style="$attrs.style"
+    >
         <div class="cg-content">
             <crop-view
                 v-show="showCropper"
                 ref="view"
+                v-bind="cropperAttrs()"
+                :labels="cropperLabels"
                 :view="currentView"
-                v-bind="$attrs"
-                @update="$emit('update', $event)"
+                v-on="forwardedListeners"
                 @image-remove="handleImageRemove"
                 @new-image="handleNewImage"
                 @file-loaded="handleFileLoaded"
                 @move="handleMove"
                 @zoom="handleZoom"
                 @draw="handleDraw"
-
-                @init="$emit('init')"
-                @file-choose="$emit('file-choose')"
-                @file-size-exceed="$emit('file-size-exceed')"
-                @file-type-mismatch="$emit('file-type-mismatch')"
-                @new-image-drawn="$emit('new-image-drawn')"
-                @initial-image-loaded="$emit('initial-image-loaded')"
-                @loading-start="$emit('loading-start')"
-                @loading-end="$emit('loading-end')"
-                @image-error="$emit('image-error')"
             />
             <slot />
         </div>
+
+        <input
+            v-if="multiple"
+            ref="files"
+            type="file"
+            accept="image/*"
+            multiple
+            class="cg-file-input"
+            tabindex="-1"
+            aria-hidden="true"
+            @change="handleFileInput"
+        >
 
         <crop-selection
             :items="sortedItems"
@@ -34,46 +41,89 @@
             :selection-text-class="selectionTextClass"
             :current-view-id="currentViewId"
             :highest-order="highestOrder"
-            @setView="setView"
-            @updateItems="setItems($event);hasChanged();"
-            @chooseFile="chooseFile"
-            @thumbnailError="handleThumbnailError"
+            :labels="texts"
+            :id-base="idBase"
+            @set-view="setView"
+            @update-items="updateItems"
+            @choose-file="chooseFile"
+            @thumbnail-error="handleThumbnailError"
         />
     </div>
 </template>
 
-
 <script>
-
 import props from './core/props';
+
+// Gives each CropGram its own ids for aria-describedby
+let instances = 0;
+import emits, { cropperEvents } from './core/events';
+import { cropperLabelKeys, defaultLabels } from './core/labels';
 import CropView from './components/view/CropView.vue';
 import CropSelection from './components/selection/CropSelection.vue';
 
 import collection from './mixins/collection';
+import handleFiles from './mixins/handleFiles';
 import handleMethods from './mixins/handleMethods';
 import handleSaving from './mixins/handleSaving';
 import helpers from './mixins/helpers';
 
 export default {
-    props,
-    mixins: [
-        collection,
-        handleMethods,
-        handleSaving,
-        helpers,
-    ],
     components: {
         CropView,
         CropSelection,
     },
+    mixins: [
+        collection,
+        handleFiles,
+        handleMethods,
+        handleSaving,
+        helpers,
+    ],
+    // class and style go to the root element. The other attributes, for example the props
+    // of vue-instagram-cropper, go to the cropper.
+    inheritAttrs: false,
+    props,
+    emits,
     data() {
         return {
             currentViewId: -1,
             currentView: null,
             cropper: null,
             valuesChanged: false,
-            blockChangeEvent: false, // Important for setView
+            // The stored crop that the cropper shows again, see isRestoring()
+            restoredSrc: null,
+            // Gives every item a key, see lib/cropperUrl.js
+            nextKey: 0,
+            // addFiles() loads files after an await
+            isUnmounted: false,
+            // Runs one addFiles() after the other
+            fileQueue: null,
+            // The name of the file that the cropper loads, see handleFileLoaded()
+            chosenFileName: '',
         };
+    },
+    computed: {
+        texts() {
+            return { ...defaultLabels, ...this.labels };
+        },
+        // Only the texts that labels sets. The cropper keeps its defaults for the others.
+        cropperLabels() {
+            // Vue lets an optional prop be null
+            const labels = this.labels || {};
+
+            return Object.fromEntries(cropperLabelKeys
+                .filter((key) => labels[key] !== undefined)
+                .map((key) => [key, labels[key]]));
+        },
+        forwardedListeners() {
+            return Object.fromEntries(cropperEvents.map(
+                (name) => [name, (...args) => this.$emit(name, ...args)],
+            ));
+        },
+    },
+    created() {
+        instances += 1;
+        this.idBase = `cropgram-${instances}`;
     },
     mounted() {
         this.items.forEach(
@@ -84,17 +134,26 @@ export default {
 
         this.cropper = this.$refs.view.$refs.cropper;
     },
+    beforeUnmount() {
+        this.isUnmounted = true;
+    },
     methods: {
+        cropperAttrs() {
+            return Object.fromEntries(Object.entries(this.$attrs)
+                .filter(([key]) => key !== 'class' && key !== 'style'));
+        },
         /**
-		 * Adds a new Image to this.sortedItems
-		 * @param {Integer} order     [Order of Images]
-		 * @param {String} thumbnail [Simple Image]
-		 * @param {Object} cropper    [Contains Infos of the picture]
+         * Adds a new Image to this.sortedItems
+         * @param {Integer} order     [Order of Images]
+         * @param {String} thumbnail [Simple Image]
+         * @param {Object} cropper    [Contains Infos of the picture]
          * @param {string} url    [The url of the image]
-		 */
-        addItem(order, thumbnail, cropper = {}, url = '', changed = false) {
+         * @param {string} name    [The name of a chosen file]
+         */
+        addItem(order, thumbnail, cropper = {}, url = '', changed = false, name = '') {
+            this.nextKey += 1;
             this.add({
-                order, thumbnail, cropper, url, changed,
+                key: this.nextKey, order, thumbnail, cropper, url, changed, name,
             });
         },
         addNewUrl(url) {
@@ -107,6 +166,9 @@ export default {
                 return;
             }
 
+            // Stores the latest crop of the current image before the view changes
+            this.updateCurrentSortedItem();
+
             this.addItem(
                 this.highestOrder + 1,
                 url,
@@ -114,7 +176,6 @@ export default {
                 url,
                 false,
             );
-
 
             this.setViewId(nextId);
 
@@ -127,13 +188,12 @@ export default {
         addNewCropper(cropper) {
             const nextId = this.sortedItemsCount;
 
-            if (!cropper || cropper === {}) return;
+            if (!cropper || Object.keys(cropper).length === 0) return;
 
             if (this.itemsLimit <= nextId) {
                 this.$emit('limit-reached');
                 return;
             }
-
 
             this.addItem(
                 this.highestOrder + 1,
@@ -141,8 +201,8 @@ export default {
                 cropper,
                 '',
                 true,
+                this.chosenFileName,
             );
-
 
             this.setViewId(nextId);
 
@@ -163,16 +223,30 @@ export default {
             this.setViewId(0);
         },
         setView(id) {
-            this.blockChangeEvent = true;
-
             this.updateCurrentSortedItem();
             this.setViewId(id);
             this.updateCurrentView();
 
             this.$emit('set-view', id);
         },
+        updateItems(list) {
+            this.setItems(list);
+            this.updateCurrentView();
+            this.hasChanged();
+        },
         chooseFile() {
-            this.cropper.chooseFile();
+            // At the limit, a new file would only replace the current image in the cropper
+            if (this.itemsLimit <= this.sortedItemsCount) {
+                this.$emit('limit-reached');
+                return;
+            }
+
+            if (this.multiple) {
+                this.$refs.files.click();
+            } else {
+                this.cropper.chooseFile();
+            }
+
             this.$emit('choose-file-button');
         },
         getCurrentCropperThumbnail() {
@@ -181,8 +255,17 @@ export default {
         save() {
             return this.createOutputArray();
         },
-
-
     },
 };
 </script>
+
+<style scoped>
+/* Hidden like the file input of the cropper. Some browsers do not open a hidden input. */
+.cg-file-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    margin-left: -99999px;
+}
+</style>

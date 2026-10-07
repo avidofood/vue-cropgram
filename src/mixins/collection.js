@@ -19,7 +19,7 @@ export default {
 		 */
         recalculateOrder(lastOrder) {
             this.sortedItems.forEach((item, index) => {
-                this.sortedItems[index].order = item.order > lastOrder ? item.order - 1 : item.order;
+                if (item.order > lastOrder) this.sortedItems[index].order = item.order - 1;
             });
         },
         sortedItem(id) {

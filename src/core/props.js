@@ -24,6 +24,17 @@ export default {
         type: String,
         default: '',
     },
+    // Texts for screen readers: add, image, choose and position of CropGram, and canvas, remove
+    // and fullscreen of the cropper. {index} is the number of the image.
+    labels: {
+        type: Object,
+        default: () => ({}),
+    },
+    // The add button and chooseFile() let the user choose several files at once
+    multiple: {
+        type: Boolean,
+        default: false,
+    },
     itemsLimit: {
         type: Number,
         default: 4,

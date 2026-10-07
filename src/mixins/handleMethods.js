@@ -11,7 +11,8 @@ export default {
 
             this.remove(id);
 
-            if (!this.isSortedItemsEmpty) {
+            // Only a chosen image has a place in the order. Order 0 means not chosen.
+            if (order > 0) {
                 this.recalculateOrder(order);
             }
 
@@ -25,30 +26,39 @@ export default {
             this.addNewCropper(newValue);
         },
         handleFileLoaded() {
+            // The cropper clears the chosen file when it removes the shown image, before
+            // loading-end. addNewCropper() runs after loading-end and needs the name.
+            const file = this.cropper.getChosenFile();
+            this.chosenFileName = file ? file.name : '';
+
             this.$emit('file-loaded');
 
             if (this.isSortedItemsEmpty) return;
 
             this.updateCurrentSortedItem();
         },
+        // The item is changed before the events, so that a listener can call save()
         handleMove() {
-            if (this.blockChangeEvent) return;
+            if (!this.isUserChange()) return;
 
+            this.setChanged();
             this.$emit('move');
             this.hasChanged();
-            this.setChanged();
         },
         handleZoom() {
-            if (this.blockChangeEvent) return;
+            if (!this.isUserChange()) return;
 
+            this.setChanged();
             this.$emit('zoom');
             this.hasChanged();
-            this.setChanged();
         },
-        handleDraw() {
-            this.$emit('draw');
-            // resets the blockChangeEvent
-            this.blockChangeEvent = false;
+        handleDraw(...args) {
+            // The cropper drew the current image, so a restore of a stored crop is complete
+            if (this.cropperShows(this.sortedItem(this.currentViewId))) {
+                this.restoredSrc = this.$refs.view.cropper;
+            }
+
+            this.$emit('draw', ...args);
         },
         handleThumbnailError(index) {
             this.$emit('thumbnail-error', index);
