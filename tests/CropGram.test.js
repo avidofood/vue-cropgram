@@ -107,6 +107,20 @@ describe('save()', () => {
         await expect(wrapper.vm.save()).resolves.toEqual(urls.map((url) => ({ url })));
     });
 
+    it('returns a blob of the crop for a moved image', async () => {
+        const wrapper = mountCropGram({ mimeType: 'image/png', compression: 0.5 });
+        await nextTick();
+        cropperOf(wrapper).vm.drag(-50);
+
+        const [first, second] = await wrapper.vm.save();
+
+        expect(first.blob).toBeInstanceOf(Blob);
+        expect(first.blob.type).toBe('image/png');
+        expect(first.blob.compression).toBe(0.5);
+        expect(first.blob.imgData.startX).toBe(-50);
+        expect(second).toEqual({ url: urls[1] });
+    });
+
     it('returns a blob for a chosen file', async () => {
         const wrapper = mountCropGram({ items: [] });
         await nextTick();
@@ -232,6 +246,22 @@ describe('changes', () => {
 
         expect(wrapper.emitted('zoom')).toHaveLength(1);
         expect(wrapper.emitted('has-changed')).toHaveLength(1);
+    });
+
+    it('ignores move and zoom until the cropper drew the new view', async () => {
+        const wrapper = mountCropGram();
+        await nextTick();
+        const cropper = cropperOf(wrapper).vm;
+        cropper.instantLoad = false;
+
+        wrapper.vm.setView(1);
+        await nextTick();
+        cropper.$emit('move');
+        cropper.$emit('zoom');
+
+        expect(wrapper.emitted('move')).toBeUndefined();
+        expect(wrapper.emitted('zoom')).toBeUndefined();
+        await expect(wrapper.vm.save()).resolves.toEqual(urls.map((url) => ({ url })));
     });
 });
 

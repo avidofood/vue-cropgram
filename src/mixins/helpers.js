@@ -5,13 +5,17 @@ export default {
             this.$emit('has-changed');
         },
         setChanged() {
-            this.sortedItem(this.currentViewId).changed = true;
+            const item = this.sortedItem(this.currentViewId);
+
+            if (item) item.changed = true;
         },
         updateCurrentView() {
             this.currentView = this.sortedItem(this.currentViewId);
         },
         updateCurrentSortedItem() {
-            this.sortedItem(this.currentViewId).cropper = this.cropper.getMetadata();
+            const item = this.sortedItem(this.currentViewId);
+
+            if (item) item.cropper = this.cropper.getMetadata();
         },
     },
 };

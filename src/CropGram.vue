@@ -178,6 +178,7 @@ export default {
         },
         updateItems(list) {
             this.setItems(list);
+            this.updateCurrentView();
             this.hasChanged();
         },
         chooseFile() {

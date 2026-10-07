@@ -1,6 +1,7 @@
 <!-- eslint-disable max-len -->
 <template>
     <button
+        type="button"
         class="cg-btn-upload"
         @click="$emit('clicked')"
     >

@@ -1,51 +1,55 @@
 export default {
     methods: {
         /**
-		 * It sorts the array out.
-		 *    1. Slice(0) creates a new array.
-		 *    2. sort() sorts the array by order
-		 *    3. filter() filters the 0 order out (not chosen)
-         *    4. filter() filters the errors (shouldn't be there..)
-		 *    5. map() our array need to have the format: 'image' or 'url'
-		 *
-		 * @return {Promise}
-		 */
+         * The result of save(): the chosen images in their order.
+         *    1. filter() keeps the chosen images (order 0 means not chosen)
+         *    2. sort() sorts them by order
+         *    3. filter() removes images without a result (shouldn't be there..)
+         *    4. map() gives { url } for an unchanged image of the items prop, else { blob }
+         *
+         * @return {Promise<Array>}
+         */
         createOutputArray() {
-            return Promise.all(this.sortedItems.slice(0)
-                		.sort(this.sortByOrder)
-                		.filter((item) => item.order > 0)
-                		.filter(this.filterErrors)
-				  		.map(this.mapArrayForOutput));
+            return Promise.all(this.sortedItems
+                .filter((item) => item.order > 0)
+                .sort(this.sortByOrder)
+                .filter(this.filterErrors)
+                .map(this.mapArrayForOutput));
         },
         sortByOrder(a, b) {
             if (a.order > b.order) return 1;
             if (a.order < b.order) return -1;
             return 0;
         },
-        filterErrors(item) {
-            // Error when URL or Cropper is not set, when no change
-            if (!item.changed && (!item.url || Object.keys(item.cropper).length !== 0)) {
-                return false;
+        /**
+         * The crop of an image. The cropper has the latest crop of the current image.
+         * The stored crop of the current image can be older (#6).
+         *
+         * @return {Object} [The metadata of the cropper, or {} if there is none]
+         */
+        cropDataOf(item) {
+            const isCurrent = item === this.sortedItem(this.currentViewId);
+
+            // While blockChangeEvent is true, the cropper still loads the image of a new view
+            if (isCurrent && !this.blockChangeEvent && this.cropper.hasImage()) {
+                return this.cropper.getMetadata();
             }
 
-            // IMPORTANT: Not an error, when changed is set, but cropper empty.
-            // This means we need to get the cropper data
-            // if (item.changed && Object.keys(item.cropper).length === 0) return false;
+            return item.cropper;
+        },
+        filterErrors(item) {
+            // An unchanged image gives its URL
+            if (!item.changed) return Boolean(item.url);
 
-            return true;
+            // A changed image needs a crop
+            return Boolean(this.cropDataOf(item).img);
         },
         mapArrayForOutput(item) {
-            if (!item.changed && item.url) {
+            if (!item.changed) {
                 return { url: item.url };
             }
 
-            if (Object.keys(item.cropper).length === 0) {
-                // Create blob from current canvas.
-                return { blob: this.cropper.promisedBlob(this.mimeType, this.compression) };
-            }
-
-            // Recreate blob from sortedItems
-            const { img, imgData } = item.cropper;
+            const { img, imgData } = this.cropDataOf(item);
             const { outputWidth, outputHeight } = this.cropper;
 
             return this.cropper.saving(img, imgData, outputWidth, outputHeight)

@@ -11,7 +11,8 @@ export default {
 
             this.remove(id);
 
-            if (!this.isSortedItemsEmpty) {
+            // Only a chosen image has a place in the order. Order 0 means not chosen.
+            if (order > 0) {
                 this.recalculateOrder(order);
             }
 

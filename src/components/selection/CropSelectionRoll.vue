@@ -23,7 +23,6 @@
 </template>
 <script>
 import RollElement from './CropSelectionRollElement.vue';
-import deepClone from '../../lib/deepClone';
 
 export default {
     components: { RollElement },
@@ -49,7 +48,9 @@ export default {
          * @param  {integer} index [important for this.items]
          */
         toggleOrder(index) {
-            const list = deepClone(this.items);
+            // Shallow copies keep the image element in the crop data.
+            // A JSON copy turned it into {}, and save() failed in drawImage (#6).
+            const list = this.items.map((item) => ({ ...item }));
             const oldOrder = list[index].order;
 
             if (list[index].order === 0) {
