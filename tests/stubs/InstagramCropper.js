@@ -8,9 +8,11 @@ export const events = [
 ];
 
 // A real image element. JSON.stringify() turns it into {}, like in the browser.
-export const createImage = (name) => {
+// An image from a URL has that URL as src, like in the real cropper.
+export const createImage = (name, src) => {
     const img = document.createElement('img');
     img.dataset.name = name;
+    if (src) img.src = src;
     return img;
 };
 
@@ -56,7 +58,7 @@ export default defineComponent({
             const src = this.pendingSrc;
 
             if (typeof src === 'string') {
-                this.img = createImage(src);
+                this.img = createImage(src, src);
                 this.imgData = {
                     width: 600, height: 600, startX: 0, startY: 0,
                 };
@@ -88,12 +90,17 @@ export default defineComponent({
         // The blob describes its input, so tests can check what CropGram saved
         saving(img, imgData, outputWidth, outputHeight) {
             return {
-                promisedBlob: (mimeType, compression) => Promise.resolve(Object.assign(
-                    new Blob(['image'], { type: mimeType }),
-                    {
-                        img, imgData, outputWidth, outputHeight, compression,
-                    },
-                )),
+                // Like canvas.toBlob(), it gives null for a canvas without a size
+                promisedBlob: (mimeType, compression) => {
+                    if (outputWidth === 0) return Promise.resolve(null);
+
+                    return Promise.resolve(Object.assign(
+                        new Blob(['image'], { type: mimeType }),
+                        {
+                            img, imgData, outputWidth, outputHeight, compression,
+                        },
+                    ));
+                },
             };
         },
         promisedBlob(...args) {
@@ -118,6 +125,12 @@ export default defineComponent({
                 width: 0, height: 0, startX: 0, startY: 0,
             };
             this.$emit('image-remove');
+        },
+        // Test helper: the user zoomed in
+        zoomIn() {
+            this.imgData = { ...this.imgData, width: this.imgData.width * 1.1 };
+            this.$emit('zoom');
+            this.$emit('draw');
         },
         // Test helper: the user dragged the image
         drag(x) {

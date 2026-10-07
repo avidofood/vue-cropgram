@@ -194,7 +194,7 @@ async function upload() {
 </template>
 ```
 
-- `save()`: Returns a promise with an array of objects, one for each chosen image in its order. An unchanged image from `items` gives `{ url }`. A chosen file, or an image that you moved or zoomed, gives `{ blob }`. Here is an example how you can send this to your backend:
+- `save()`: Returns a promise with an array of objects, one for each chosen image in its order. An unchanged image from `items` gives `{ url }`. A chosen file, or an image that you moved or zoomed, gives `{ blob }`. If the browser cannot create an image, for example because the cropper has no size, the promise rejects with an error. Here is an example how you can send this to your backend:
 
 ```javascript
 async createFormData() {
@@ -209,7 +209,7 @@ async createFormData() {
 },
 ```
 - `getCurrentCropperThumbnail()`: Get's thumbnail of the current view
-- `chooseFile()`: Choose a file
+- `chooseFile()`: Opens the file dialog. At `itemsLimit`, it emits `limit-reached` and opens no dialog.
 - `setView(id)`: Sets a view with index
 - `addNewUrl(url)`: Sets an image via URL
 
@@ -223,9 +223,10 @@ Version 2.0 works with Vue 3. These are the changes for your code:
 4. Attributes: `class` and `style` stay on the root element, as in 1.x. All other attributes and listeners go only to the cropper. In 1.x, other attributes were also on the root element and on the `<form>` around the cropper.
 5. Listeners for events that CropGram does not emit, for example `@image-remove-onload`, now reach the cropper. In 1.x, these listeners never ran.
 6. Events of the cropper now carry their arguments, for example the file of `file-size-exceed` and the cropper of `init`. In 1.x, only `update` had an argument. Listeners without parameters work as before.
-7. `save()` returns what you see. It uses the latest crop of the current image. `blob` is always a `Blob`. Before, it was sometimes a pending promise. An unchanged image from `items` stays a `{ url }` after you looked at it. If you called `updateCurrentSortedItem()` before `save()` as a workaround ([#6](https://github.com/avidofood/vue-cropgram/issues/6)), you can remove that call.
-8. The package files changed. `dist/index.common.js`, `dist/index.umd.js` and `dist/index.umd.min.js` are now `dist/vue-cropgram.mjs` (ES module) and `dist/vue-cropgram.umd.js` (UMD and CommonJS). The package no longer contains `src/`. Import from `vue-cropgram` only.
-9. The UMD build does not contain the cropper anymore. In a `<script>` tag setup, load Vue, then the UMD build of vue-instagram-cropper 2.x, then `vue-cropgram.umd.js`. The global name is `VueCropgram`. In 1.x, it was `index`.
+7. `save()` returns what you see. It uses the latest crop of the current image. `blob` is always a `Blob`. Before, it was sometimes a pending promise or `null`. If the browser cannot create an image, `save()` now rejects with an error. An unchanged image from `items` stays a `{ url }` after you looked at it. If you called `updateCurrentSortedItem()` before `save()` as a workaround ([#6](https://github.com/avidofood/vue-cropgram/issues/6)), you can remove that call.
+8. `chooseFile()` at `itemsLimit` emits `limit-reached` and opens no file dialog. In 1.x, it opened the dialog, and the chosen file replaced the current image in the cropper.
+9. The package files changed. `dist/index.common.js`, `dist/index.umd.js` and `dist/index.umd.min.js` are now `dist/vue-cropgram.mjs` (ES module) and `dist/vue-cropgram.umd.js` (UMD and CommonJS). The package no longer contains `src/`. Import from `vue-cropgram` only.
+10. The UMD build does not contain the cropper anymore. In a `<script>` tag setup, load Vue, then the UMD build of vue-instagram-cropper 2.x, then `vue-cropgram.umd.js`. The global name is `VueCropgram`. In 1.x, it was `index`.
 
 ## TODO
 

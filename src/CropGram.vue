@@ -69,7 +69,6 @@ export default {
             currentView: null,
             cropper: null,
             valuesChanged: false,
-            blockChangeEvent: false, // Important for setView
         };
     },
     computed: {
@@ -114,6 +113,9 @@ export default {
                 this.$emit('limit-reached');
                 return;
             }
+
+            // Stores the latest crop of the current image before the view changes
+            this.updateCurrentSortedItem();
 
             this.addItem(
                 this.highestOrder + 1,
@@ -168,8 +170,6 @@ export default {
             this.setViewId(0);
         },
         setView(id) {
-            this.blockChangeEvent = true;
-
             this.updateCurrentSortedItem();
             this.setViewId(id);
             this.updateCurrentView();
@@ -182,6 +182,12 @@ export default {
             this.hasChanged();
         },
         chooseFile() {
+            // At the limit, a new file would only replace the current image in the cropper
+            if (this.itemsLimit <= this.sortedItemsCount) {
+                this.$emit('limit-reached');
+                return;
+            }
+
             this.cropper.chooseFile();
             this.$emit('choose-file-button');
         },

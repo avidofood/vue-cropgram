@@ -30,8 +30,8 @@ export default {
         cropDataOf(item) {
             const isCurrent = item === this.sortedItem(this.currentViewId);
 
-            // While blockChangeEvent is true, the cropper still loads the image of a new view
-            if (isCurrent && !this.blockChangeEvent && this.cropper.hasImage()) {
+            // While the cropper loads the image of a new view, it still shows the previous image
+            if (isCurrent && this.cropperShows(item)) {
                 return this.cropper.getMetadata();
             }
 
@@ -54,7 +54,12 @@ export default {
 
             return this.cropper.saving(img, imgData, outputWidth, outputHeight)
                 .promisedBlob(this.mimeType, this.compression)
-                .then((blob) => ({ blob }));
+                .then((blob) => {
+                    // canvas.toBlob() gives null, for example for a canvas without a size
+                    if (!blob) throw new Error('vue-cropgram: the browser could not create the image');
+
+                    return { blob };
+                });
         },
     },
 };

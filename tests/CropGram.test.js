@@ -248,7 +248,7 @@ describe('changes', () => {
         expect(wrapper.emitted('has-changed')).toHaveLength(1);
     });
 
-    it('ignores move and zoom until the cropper drew the new view', async () => {
+    it('ignores move and zoom while the cropper still shows the previous image', async () => {
         const wrapper = mountCropGram();
         await nextTick();
         const cropper = cropperOf(wrapper).vm;

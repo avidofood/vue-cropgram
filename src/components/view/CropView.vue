@@ -57,11 +57,12 @@ export default {
         },
     },
     watch: {
+        // Not deep: CropGram stores the crop of the current image in the same item. Sending that
+        // crop to the cropper again would reload the image and can replace a newly chosen file.
         view: {
             handler(val) {
                 this.convertCropper(val);
             },
-            deep: true,
             immediate: true,
         },
     },

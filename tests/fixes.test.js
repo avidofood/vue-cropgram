@@ -165,3 +165,152 @@ describe('add button', () => {
         expect(onSubmit).not.toHaveBeenCalled();
     });
 });
+
+describe('review of 2.0.0-dev (Codex Astra)', () => {
+    const uploadThree = async (wrapper) => {
+        const cropper = cropperOf(wrapper).vm;
+        const images = [];
+        cropper.loadFile('a.jpg');
+        await nextTick();
+        images.push(cropper.img);
+        cropper.loadFile('b.jpg');
+        await nextTick();
+        images.push(cropper.img);
+        cropper.loadFile('c.jpg');
+        await nextTick();
+        images.push(cropper.img);
+        return images;
+    };
+
+    it('keeps the crop of an image when you switch views twice while the cropper loads', async () => {
+        const wrapper = mountCropGram({ items: [], itemsLimit: 3 });
+        await nextTick();
+        const [a, b] = await uploadThree(wrapper);
+        const cropper = cropperOf(wrapper).vm;
+
+        cropper.instantLoad = false;
+        wrapper.vm.setView(0);
+        await nextTick();
+        wrapper.vm.setView(1);
+        await nextTick();
+        const results = await wrapper.vm.save();
+
+        // The cropper still shows c.jpg. Neither a.jpg nor b.jpg may get its crop.
+        expect(results[0].blob.img).toBe(a);
+        expect(results[1].blob.img).toBe(b);
+    });
+
+    it('keeps the change of the current image when you add a URL', async () => {
+        const wrapper = mountCropGram({ items: [urls[0]] });
+        await nextTick();
+        cropperOf(wrapper).vm.drag(-40);
+
+        wrapper.vm.addNewUrl('/images/new.jpg');
+        await nextTick();
+        const results = await wrapper.vm.save();
+
+        expect(results).toHaveLength(2);
+        expect(results[0].blob.imgData.startX).toBe(-40);
+        expect(results[1]).toEqual({ url: '/images/new.jpg' });
+    });
+
+    it('marks the image as changed before it emits has-changed', async () => {
+        let saved;
+        const wrapper = mountCropGram({
+            items: [urls[0]],
+            'onHas-changed': () => { saved = wrapper.vm.save(); },
+        });
+        await nextTick();
+
+        cropperOf(wrapper).vm.drag(-10);
+        const [result] = await saved;
+
+        expect(result.blob).toBeInstanceOf(Blob);
+    });
+
+    it('does not open the file dialog at the limit', async () => {
+        const wrapper = mountCropGram({ items: [urls[0]], itemsLimit: 1 });
+        await nextTick();
+
+        wrapper.vm.chooseFile();
+
+        expect(cropperOf(wrapper).vm.chooseFileCalls).toBe(0);
+        expect(wrapper.emitted('limit-reached')).toHaveLength(1);
+        expect(wrapper.emitted('choose-file-button')).toBeUndefined();
+    });
+
+    it('does not save the image of a rejected file in place of the current image', async () => {
+        let saved;
+        const wrapper = mountCropGram({
+            items: [],
+            itemsLimit: 1,
+            'onLimit-reached': () => { saved = wrapper.vm.save(); },
+        });
+        await nextTick();
+        const cropper = cropperOf(wrapper).vm;
+        cropper.loadFile('accepted.jpg');
+        await nextTick();
+        const accepted = cropper.img;
+
+        // The cropper loads a file itself, for example after a drop
+        cropper.loadFile('rejected.jpg');
+        await nextTick();
+        const [result] = await saved;
+
+        expect(result.blob.img).toBe(accepted);
+    });
+
+    it('ignores a move of a rejected file in the cropper', async () => {
+        const wrapper = mountCropGram({ items: [urls[0]], itemsLimit: 1 });
+        await nextTick();
+        const cropper = cropperOf(wrapper).vm;
+        cropper.instantLoad = false;
+
+        cropper.loadFile('rejected.jpg');
+        await nextTick();
+        cropper.drag(-10);
+
+        expect(wrapper.emitted('move')).toBeUndefined();
+        await expect(wrapper.vm.save()).resolves.toEqual([{ url: urls[0] }]);
+    });
+
+    it('records a zoom after a click on the current thumbnail', async () => {
+        const wrapper = mountCropGram();
+        await nextTick();
+
+        wrapper.vm.setView(0);
+        await nextTick();
+        cropperOf(wrapper).vm.zoomIn();
+        const [result] = await wrapper.vm.save();
+
+        expect(wrapper.emitted('zoom')).toHaveLength(1);
+        expect(result.blob).toBeInstanceOf(Blob);
+    });
+
+    it('does not send the stored crop to the cropper again when it stores the crop', async () => {
+        // The real cropper loads a new src after 30 ms. If the chosen file is not drawn by then,
+        // the old crop replaces it, and the new item gets the old image.
+        const wrapper = mountCropGram({ items: [urls[0]] });
+        await nextTick();
+        const cropper = cropperOf(wrapper).vm;
+        cropper.drag(-20);
+
+        cropper.$emit('file-loaded');
+        await nextTick();
+        wrapper.vm.setView(0);
+        await nextTick();
+
+        expect(cropper.$props.src).toBe(urls[0]);
+    });
+
+    it('rejects save() when the browser cannot create a blob', async () => {
+        const wrapper = mountCropGram();
+        await nextTick();
+        const cropper = cropperOf(wrapper).vm;
+        cropper.drag(-10);
+
+        cropper.outputWidth = 0;
+
+        await expect(wrapper.vm.save()).rejects.toThrow('could not create the image');
+    });
+});

@@ -16,11 +16,6 @@ export default {
                 this.recalculateOrder(order);
             }
 
-            // Like in setView: the cropper loads the next image, and that is no change by the user
-            if (!this.isSortedItemsEmpty) {
-                this.blockChangeEvent = true;
-            }
-
             this.updateCurrentView();
 
             this.$emit('image-remove');
@@ -37,24 +32,23 @@ export default {
 
             this.updateCurrentSortedItem();
         },
+        // The item is changed before the events, so that a listener can call save()
         handleMove() {
-            if (this.blockChangeEvent) return;
+            if (!this.isUserChange()) return;
 
+            this.setChanged();
             this.$emit('move');
             this.hasChanged();
-            this.setChanged();
         },
         handleZoom() {
-            if (this.blockChangeEvent) return;
+            if (!this.isUserChange()) return;
 
+            this.setChanged();
             this.$emit('zoom');
             this.hasChanged();
-            this.setChanged();
         },
         handleDraw(...args) {
             this.$emit('draw', ...args);
-            // resets the blockChangeEvent
-            this.blockChangeEvent = false;
         },
         handleThumbnailError(index) {
             this.$emit('thumbnail-error', index);

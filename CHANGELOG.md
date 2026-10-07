@@ -32,11 +32,17 @@ Version 2.0 works with Vue 3. The README has a section "Migration from 1.x to 2.
 - Removing an image that is not chosen keeps the order of the chosen images. Before, all chosen images moved down one place, and the first one lost its place.
 - While the cropper loads the image of a new view, `save()` uses the stored crop of that image.
 - The add button has `type="button"`. Before, it submitted a `<form>` around the component.
+- Fast view changes no longer give an image the crop of another image. Before, a second view change during the load of an image stored the crop of the previous image in the wrong item.
+- `addNewUrl()` keeps the latest crop of the current image. Before, a moved image from `items` was missing in the result of `save()` after `addNewUrl()`.
+- A `save()` in a `has-changed`, `move` or `zoom` listener includes the change. Before, the image was marked as changed after these events.
+- Storing the crop of the current image no longer reloads the image in the cropper. Before, the previous image sometimes replaced a newly chosen file.
 - A move in the cropper without a current image no longer throws a `TypeError`.
 - Photos from a phone camera show the right way up ([#7](https://github.com/avidofood/vue-cropgram/issues/7)). vue-instagram-cropper 2.x lets the browser apply the EXIF orientation. Before, the photo turned twice.
 
 ### Changed
 
+- If the browser cannot create an image, `save()` rejects with an error. An example is a cropper without a size. Before, the result had `blob: null`.
+- `chooseFile()` at `itemsLimit` emits `limit-reached` and opens no file dialog. Before, the chosen file replaced the current image in the cropper, and `save()` sometimes returned it in place of the current image.
 - `vue` (`^3.2.0`) is a peer dependency.
 - The package declares `"type": "commonjs"` and `"exports"` with `types` conditions.
 - The build uses Vite 8. Tests use Vitest. Lint uses ESLint 9 and eslint-config-avidofood 4. The development tools need Node.js 22.12 or newer. The published files have no Node.js requirement.

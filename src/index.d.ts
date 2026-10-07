@@ -62,11 +62,11 @@ export interface CropGramCropperProps {
 }
 
 export type CropGramMethods = {
-    /** The chosen images in their order. */
+    /** The chosen images in their order. Rejects if the browser cannot create an image. */
     save(): Promise<CropGramResult[]>;
     /** A data URL of the image in the cropper. */
     getCurrentCropperThumbnail(): string;
-    /** Opens the file dialog. */
+    /** Opens the file dialog. At itemsLimit, it emits limit-reached instead. */
     chooseFile(): void;
     /** Shows the image at this index in the cropper. */
     setView(id: number): void;
