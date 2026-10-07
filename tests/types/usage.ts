@@ -70,7 +70,8 @@ instance.addFiles(['/images/a.jpg']);
 saved.then((results) => {
     const data = new FormData();
     results.forEach((picture, index) => {
-        data.append(`media[${index}]`, picture.url ?? picture.blob);
+        if (picture.url !== undefined) data.append(`media[${index}]`, picture.url);
+        else data.append(`media[${index}]`, picture.blob, picture.name);
     });
     return data;
 });

@@ -98,7 +98,7 @@ export default {
                     .saving(cropper.img, cropper.imgData, outputWidth, outputHeight)
                     .generateDataUrl();
 
-                this.addItem(this.highestOrder + 1, thumbnail, cropper, '', true);
+                this.addItem(this.highestOrder + 1, thumbnail, cropper, '', true, file.name);
                 added += 1;
 
                 this.$emit('new-image');

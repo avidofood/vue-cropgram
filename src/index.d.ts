@@ -12,8 +12,11 @@ import type {
 export type CropGramResult =
     /** An unchanged image of the `items` prop. */
     | { url: string; blob?: undefined }
-    /** A chosen file, or an image that you moved or zoomed. */
-    | { blob: Blob; url?: undefined };
+    /**
+     * A chosen file, or an image that you moved or zoomed. name is the name of the chosen file
+     * or the last part of the URL, with the extension of the blob type. A data URL has no name.
+     */
+    | { blob: Blob; name?: string; url?: undefined };
 
 /**
  * The image and its crop in the cropper. The update event carries it.

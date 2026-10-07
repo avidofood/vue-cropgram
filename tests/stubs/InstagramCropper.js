@@ -42,6 +42,7 @@ export default defineComponent({
             outputWidth: 600,
             outputHeight: 600,
             chooseFileCalls: 0,
+            chosenFile: undefined,
             // Set it to false to keep the old image until finishLoad(), like a slow network
             instantLoad: true,
             pendingSrc: null,
@@ -84,6 +85,9 @@ export default defineComponent({
 
             this.$emit('draw');
         },
+        getChosenFile() {
+            return this.chosenFile;
+        },
         hasImage() {
             return this.img !== null;
         },
@@ -119,7 +123,8 @@ export default defineComponent({
         },
         // Test helper: the user chose a file, and the cropper loaded it
         loadFile(name) {
-            this.$emit('file-choose', { name });
+            this.chosenFile = new File(['image'], name, { type: 'image/jpeg' });
+            this.$emit('file-choose', this.chosenFile);
             this.$emit('file-loaded');
             this.img = createImage(name);
             this.imgData = {

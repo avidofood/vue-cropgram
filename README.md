@@ -204,7 +204,7 @@ async function upload() {
 </template>
 ```
 
-- `save()`: Returns a promise with an array of objects, one for each chosen image in its order. An unchanged image from `items` gives `{ url }`. A chosen file, or an image that you moved or zoomed, gives `{ blob }`. If the browser cannot create an image, for example because the cropper has no size, the promise rejects with an error. Here is an example how you can send this to your backend:
+- `save()`: Returns a promise with an array of objects, one for each chosen image in its order. An unchanged image from `items` gives `{ url }`. A chosen file, or an image that you moved or zoomed, gives `{ blob, name }`. `name` is the name of the chosen file or the last part of the URL, with the extension of the blob type, for example `holiday.jpg`. A data URL gives no `name`. If the browser cannot create an image, for example because the cropper has no size, the promise rejects with an error. Here is an example how you can send this to your backend:
 
 ```javascript
 async createFormData() {
@@ -213,7 +213,12 @@ async createFormData() {
    const data = new FormData();
    //list of your pics
    result.forEach((picture, index) => {
-         data.append(`media[${index}]`, picture.url || picture.blob);
+         if (picture.url) {
+            data.append(`media[${index}]`, picture.url);
+         } else {
+            // Without a name, FormData calls the file "blob"
+            data.append(`media[${index}]`, picture.blob, picture.name);
+         }
    });
    return data;
 },

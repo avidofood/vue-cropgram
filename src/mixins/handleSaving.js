@@ -1,3 +1,5 @@
+import fileName from '../lib/fileName';
+
 export default {
     methods: {
         /**
@@ -5,7 +7,7 @@ export default {
          *    1. filter() keeps the chosen images (order 0 means not chosen)
          *    2. sort() sorts them by order
          *    3. filter() removes images without a result (shouldn't be there..)
-         *    4. map() gives { url } for an unchanged image of the items prop, else { blob }
+         *    4. map() gives { url } for an unchanged image of the items prop, else { blob, name }
          *
          * @return {Promise<Array>}
          */
@@ -58,7 +60,10 @@ export default {
                     // canvas.toBlob() gives null, for example for a canvas without a size
                     if (!blob) throw new Error('vue-cropgram: the browser could not create the image');
 
-                    return { blob };
+                    // FormData calls a blob without a name "blob"
+                    const name = fileName(item, blob.type);
+
+                    return name ? { blob, name } : { blob };
                 });
         },
     },

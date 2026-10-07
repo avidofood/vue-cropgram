@@ -119,11 +119,12 @@ export default {
          * @param {String} thumbnail [Simple Image]
          * @param {Object} cropper    [Contains Infos of the picture]
          * @param {string} url    [The url of the image]
+         * @param {string} name    [The name of a chosen file]
          */
-        addItem(order, thumbnail, cropper = {}, url = '', changed = false) {
+        addItem(order, thumbnail, cropper = {}, url = '', changed = false, name = '') {
             this.nextKey += 1;
             this.add({
-                key: this.nextKey, order, thumbnail, cropper, url, changed,
+                key: this.nextKey, order, thumbnail, cropper, url, changed, name,
             });
         },
         addNewUrl(url) {
@@ -165,12 +166,15 @@ export default {
                 return;
             }
 
+            const file = this.cropper.getChosenFile();
+
             this.addItem(
                 this.highestOrder + 1,
                 this.getCurrentCropperThumbnail(),
                 cropper,
                 '',
                 true,
+                file ? file.name : '',
             );
 
             this.setViewId(nextId);
