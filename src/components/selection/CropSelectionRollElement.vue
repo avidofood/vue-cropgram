@@ -35,10 +35,11 @@
                 />
             </span>
         </button>
+        <!-- hidden: only the description of the button, not a second text in the reading order -->
         <span
             v-if="item.order > 0"
             :id="orderId"
-            class="cg-visually-hidden"
+            hidden
             v-text="withOrder(labels.position, item.order)"
         />
     </div>
@@ -77,19 +78,6 @@ export default {
 };
 </script>
 <style scoped>
-/* Only for screen readers */
-.cg-visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-}
-
 /* The buttons look like the image and the circle of 1.x */
 .roll-element-view,
 .roll-element-order {

@@ -119,3 +119,13 @@ describe('order for screen readers', () => {
         expect(wrapper.find(`[id="${id}"]`).text()).toBe('Platz 2');
     });
 });
+
+describe('description of the order', () => {
+    it('is hidden, so that screen readers read it only as the description', async () => {
+        const wrapper = mountCropGram();
+        await nextTick();
+        const id = orderButtons(wrapper)[0].attributes('aria-describedby');
+
+        expect(wrapper.find(`[id="${id}"]`).attributes()).toHaveProperty('hidden');
+    });
+});
