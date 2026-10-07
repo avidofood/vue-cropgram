@@ -61,8 +61,11 @@ export default defineComponent({
                     width: 600, height: 600, startX: 0, startY: 0,
                 };
             } else if (src) {
+                // Like the real cropper: a new width of the image emits zoom before the drawing
+                const zoomed = src.imgData.width !== this.imgData.width;
                 this.img = src.img;
                 this.imgData = { ...src.imgData };
+                if (zoomed) this.$emit('zoom');
             } else {
                 this.img = null;
                 return;
@@ -107,6 +110,14 @@ export default defineComponent({
             };
             this.$emit('draw');
             this.$emit('loading-end');
+        },
+        // Test helper: the user clicked the remove button of the cropper
+        removeImage() {
+            this.img = null;
+            this.imgData = {
+                width: 0, height: 0, startX: 0, startY: 0,
+            };
+            this.$emit('image-remove');
         },
         // Test helper: the user dragged the image
         drag(x) {

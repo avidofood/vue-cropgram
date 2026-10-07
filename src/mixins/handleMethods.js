@@ -16,6 +16,11 @@ export default {
                 this.recalculateOrder(order);
             }
 
+            // Like in setView: the cropper loads the next image, and that is no change by the user
+            if (!this.isSortedItemsEmpty) {
+                this.blockChangeEvent = true;
+            }
+
             this.updateCurrentView();
 
             this.$emit('image-remove');

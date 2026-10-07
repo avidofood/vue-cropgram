@@ -104,6 +104,36 @@ describe('remove', () => {
     });
 });
 
+describe('remove the current image', () => {
+    it('does not mark the next image as changed while the cropper loads it', async () => {
+        const wrapper = mountCropGram({ items: urls.slice(0, 2) });
+        await nextTick();
+        // The view change stores the crop of the first image
+        wrapper.vm.setView(1);
+        await nextTick();
+
+        cropperOf(wrapper).vm.removeImage();
+        await nextTick();
+
+        expect(wrapper.emitted('zoom')).toBeUndefined();
+        expect(wrapper.emitted('has-changed')).toHaveLength(1);
+        await expect(wrapper.vm.save()).resolves.toEqual([{ url: urls[0] }]);
+    });
+
+    it('emits move again after the cropper drew the next image', async () => {
+        const wrapper = mountCropGram({ items: urls.slice(0, 2) });
+        await nextTick();
+        wrapper.vm.setView(1);
+        await nextTick();
+        cropperOf(wrapper).vm.removeImage();
+        await nextTick();
+
+        cropperOf(wrapper).vm.drag(-10);
+
+        expect(wrapper.emitted('move')).toHaveLength(1);
+    });
+});
+
 describe('no current image', () => {
     it('does not throw when the cropper moves an image that is not in the list', async () => {
         const wrapper = mountCropGram({ items: [], itemsLimit: 0 });
