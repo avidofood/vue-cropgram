@@ -1,45 +1,81 @@
 {
   "name": "vue-cropgram",
-  "version": "1.0.6",
+  "version": "2.0.0",
   "description": "Instagram Style Image Uploader for Vue",
-  "main": "dist/index.common.js",
-  "unpkg": "dist/index.umd.min.js",
+  "type": "commonjs",
+  "main": "./dist/vue-cropgram.umd.js",
+  "unpkg": "./dist/vue-cropgram.umd.js",
+  "module": "./dist/vue-cropgram.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/vue-cropgram.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/vue-cropgram.umd.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
   "private": false,
   "scripts": {
-    "demo": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-    "watch": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --watch --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-    "build": "vue-cli-service build",
-    "build-bundle": "vue-cli-service build --target lib --name index ./src/index.js"
+    "build:dist": "vite build --mode dist",
+    "build:demo": "vite build --mode demo",
+    "build": "npm run build:dist && npm run build:demo",
+    "lint": "eslint .",
+    "test": "vitest run && npm run test:types",
+    "test:types": "tsc -p tests/types",
+    "prepack": "npm run build:dist"
   },
   "files": [
-    "dist/*",
-    "src/*",
-    "*.json",
-    "*.js"
+    "dist"
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/avidofood/vue-cropgram.git"
+    "url": "git+https://github.com/avidofood/vue-cropgram.git"
   },
+  "bugs": {
+    "url": "https://github.com/avidofood/vue-cropgram/issues"
+  },
+  "homepage": "https://avidofood.github.io/vue-cropgram/",
+  "keywords": [
+    "vue 3",
+    "vue3",
+    "vue",
+    "instagram",
+    "image uploader",
+    "image upload",
+    "multiple images",
+    "cropper",
+    "image cropper",
+    "crop",
+    "typescript"
+  ],
   "author": {
     "name": "Philipp Mochine",
     "email": "support@avidofood.com",
     "url": "https://avidofood.com"
   },
   "license": "MIT",
-  "devDependencies": {
-    "@vue/cli-plugin-babel": "^4.5.4",
-    "@vue/cli-service": "^4.5.4",
-    "cross-env": "^6.0.3",
-    "eslint": "^6.6.0",
-    "eslint-config-avidofood": "^1.1.0",
-    "laravel-mix": "^5.0.5",
-    "sass": "^1.26.10",
-    "sass-loader": "^8.0.2",
-    "vue": "^2.6.12",
-    "vue-template-compiler": "^2.6.12"
+  "peerDependencies": {
+    "vue": "^3.2.0"
   },
   "dependencies": {
-    "vue-instagram-cropper": "^1.1.5"
+    "vue-instagram-cropper": "^2.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.9",
+    "@vue/test-utils": "^2.5.1",
+    "eslint": "^9.39.5",
+    "eslint-config-avidofood": "^4.0.0",
+    "jsdom": "^29.1.1",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.3",
+    "vite-plugin-css-injected-by-js": "^5.0.2",
+    "vitest": "^5.0.3",
+    "vue": "^3.5.43"
   }
 }

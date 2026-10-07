@@ -45,8 +45,8 @@ export default {
             this.hasChanged();
             this.setChanged();
         },
-        handleDraw() {
-            this.$emit('draw');
+        handleDraw(...args) {
+            this.$emit('draw', ...args);
             // resets the blockChangeEvent
             this.blockChangeEvent = false;
         },

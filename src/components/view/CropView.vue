@@ -7,32 +7,31 @@
     >
         <instagram-cropper
             ref="cropper"
-            :src="cropper"
             v-bind="$attrs"
-            @update="$emit('update', $event)"
+            :src="cropper"
+            v-on="forwardedListeners"
             @file-loaded="handleFileLoaded"
             @loading-end="handleLoadingEnd"
-
-            @init="$emit('init')"
-            @file-choose="$emit('file-choose')"
-            @file-size-exceed="$emit('file-size-exceed')"
-            @file-type-mismatch="$emit('file-type-mismatch')"
-            @new-image-drawn="$emit('new-image-drawn')"
-            @image-remove="$emit('image-remove')"
-            @image-error="$emit('image-error')"
-            @move="$emit('move')"
-            @zoom="$emit('zoom')"
-            @draw="$emit('draw')"
-            @initial-image-loaded="$emit('initial-image-loaded')"
-            @loading-start="$emit('loading-start')"
         />
     </form>
 </template>
 
 <script>
 import InstagramCropper from 'vue-instagram-cropper';
+import { cropperEvents, handledCropperEvents } from '../../core/events';
+
+// CropView handles these two events itself
+const ownHandlers = ['file-loaded', 'loading-end'];
+
+const forwardedEvents = [...cropperEvents, ...handledCropperEvents]
+    .filter((name) => !ownHandlers.includes(name));
 
 export default {
+    components: {
+        InstagramCropper,
+    },
+    // The props of the cropper and the listeners of the user go to the cropper, not to the form
+    inheritAttrs: false,
     props: {
         view: {
             validator(val) {
@@ -41,14 +40,21 @@ export default {
             required: false,
         },
     },
-    components: {
-        InstagramCropper,
-    },
+    // All events are declared. Otherwise Vue 3 also gives the listeners of CropGram to the
+    // cropper through $attrs, and CropGram gets each event twice.
+    emits: [...forwardedEvents, ...ownHandlers, 'new-image'],
     data() {
         return {
             cropper: null,
             readSuccesfully: false,
         };
+    },
+    computed: {
+        forwardedListeners() {
+            return Object.fromEntries(forwardedEvents.map(
+                (name) => [name, (...args) => this.$emit(name, ...args)],
+            ));
+        },
     },
     watch: {
         view: {
@@ -78,15 +84,15 @@ export default {
          * We need don't want to fire the remove function, when we use the _onNewFileIn method.
          * So we need to remove the img.
          */
-        handleFileLoaded() {
-            this.$emit('file-loaded');
+        handleFileLoaded(...args) {
+            this.$emit('file-loaded', ...args);
             this.readSuccesfully = true;
         },
         /**
          * From this point on the image is fully loaded, and we can update the metadata
          */
-        handleLoadingEnd() {
-            this.$emit('loading-end');
+        handleLoadingEnd(...args) {
+            this.$emit('loading-end', ...args);
 
             if (!this.readSuccesfully) return;
 
@@ -97,8 +103,8 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-    .cp-view .cropper-container{
-        height: 100%;
-    }
+<style scoped>
+.cp-view .cropper-container {
+    height: 100%;
+}
 </style>

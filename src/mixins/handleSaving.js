@@ -24,7 +24,9 @@ export default {
         },
         filterErrors(item) {
             // Error when URL or Cropper is not set, when no change
-            if (!item.changed && (!item.url || Object.keys(item.cropper).length !== 0)) return false;
+            if (!item.changed && (!item.url || Object.keys(item.cropper).length !== 0)) {
+                return false;
+            }
 
             // IMPORTANT: Not an error, when changed is set, but cropper empty.
             // This means we need to get the cropper data

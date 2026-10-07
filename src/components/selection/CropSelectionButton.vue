@@ -1,3 +1,4 @@
+<!-- eslint-disable max-len -->
 <template>
     <button
         class="cg-btn-upload"
@@ -25,60 +26,53 @@
 
 <script>
 export default {
-
+    emits: ['clicked'],
 };
 </script>
 
-<style lang="scss" scoped>
-$color: #adb5bd;
-$imgSize: 60px;
+<style scoped>
+.cg-btn-upload {
+    width: 60px;
+    height: 60px;
+    margin: 1px;
+    position: relative;
 
-    .cg-btn-upload{
-        width: 60px;
-        height: 60px;
-        margin: 1px;
-        position: relative;
+    color: rgba(173, 181, 189, 0.8);
+    border: 2px dashed #adb5bd;
+    border-radius: 3px;
+    font-size: 22px;
+    background-color: transparent;
+    font-weight: 400;
+}
+.cg-btn-upload:before {
+    border-radius: 3px;
+    width: 60px;
+    height: 60px;
+    border: 2px solid #adb5bd;
 
-        color: rgba($color, 0.8);
-		border: 2px dashed $color;
-		border-radius: 3px;
-		font-size: 22px;
-        background-color: transparent;
-        font-weight: 400;
-
-		&:before{
-			border-radius: 3px;
-			width: $imgSize;
-			height: $imgSize;
-			border: 2px solid $color;
-
-            content: '';
-            position: absolute;
-            left: -2px;
-            top: -2px;
-            opacity: 0;
-            transition: all .5s ease,opacity .3s ease-out;
-		}
-		&:hover{
-        	color: $color;
-            background-color: transparent;
-            &:before{
-                opacity: 1;
-            }
-        }
-        &:focus{
-            outline: 0;
-            box-shadow: none;
-        }
-
-        svg {
-            width: 25px;
-
-            path, circle{
-                fill: $color;
-            }
-        }
-    }
-
-
+    content: '';
+    position: absolute;
+    left: -2px;
+    top: -2px;
+    opacity: 0;
+    transition: all .5s ease, opacity .3s ease-out;
+}
+.cg-btn-upload:hover {
+    color: #adb5bd;
+    background-color: transparent;
+}
+.cg-btn-upload:hover:before {
+    opacity: 1;
+}
+.cg-btn-upload:focus {
+    outline: 0;
+    box-shadow: none;
+}
+.cg-btn-upload svg {
+    width: 25px;
+}
+.cg-btn-upload svg path,
+.cg-btn-upload svg circle {
+    fill: #adb5bd;
+}
 </style>

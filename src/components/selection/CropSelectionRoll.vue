@@ -7,7 +7,6 @@
     >
         <div
             v-for="(item, index) in items"
-            :ref="'cropa'+index"
             :key="'cropa'+index"
             class="roll-element"
         >
@@ -16,8 +15,8 @@
                 :item="item"
                 :selected="currentViewId"
                 @toggle="toggleOrder($event)"
-                @setView="setView($event)"
-                @thumbnailError="$emit('thumbnailError', $event)"
+                @set-view="setView($event)"
+                @thumbnail-error="$emit('thumbnail-error', $event)"
             />
         </div>
     </transition-group>
@@ -27,6 +26,7 @@ import RollElement from './CropSelectionRollElement.vue';
 import deepClone from '../../lib/deepClone';
 
 export default {
+    components: { RollElement },
     props: {
         items: {
             type: Array,
@@ -36,18 +36,18 @@ export default {
             type: Number,
             required: true,
         },
-        highestOrder: {
+        highestOrder: {
             type: Number,
             required: true,
         },
     },
-    components: { RollElement },
+    emits: ['update-items', 'set-view', 'thumbnail-error'],
     methods: {
         /**
-		 * Unset the picture or set it.
-		 *
-		 * @param  {integer} index [important for this.items]
-		 */
+         * Unset the picture or set it.
+         *
+         * @param  {integer} index [important for this.items]
+         */
         toggleOrder(index) {
             const list = deepClone(this.items);
             const oldOrder = list[index].order;
@@ -66,42 +66,38 @@ export default {
                 });
             }
 
-            this.$emit('updateItems', list);
+            this.$emit('update-items', list);
         },
         setView(id) {
-            this.$emit('setView', id);
+            this.$emit('set-view', id);
         },
     },
 };
 </script>
-<style lang="scss" scoped>
-
-$imgSize: 60px;
-
-.roll-elements{
+<style scoped>
+.roll-elements {
     display: flex;
 }
 
-.roll-element{
-    width: $imgSize;
-    height: $imgSize;
+.roll-element {
+    width: 60px;
+    height: 60px;
     margin: 1px;
-    position:relative;
+    position: relative;
     user-select: none;
-
-	&:hover{
-		cursor: pointer;
-	}
 }
 
-.fade04{
-	backface-visibility: hidden;
-}
-.fade04-enter-active, .fade04-leave-active{
-  transition: opacity 0.4s;
-}
-.fade04-enter, .fade04-leave-to{
-  opacity: 0;
+.roll-element:hover {
+    cursor: pointer;
 }
 
+.fade04 {
+    backface-visibility: hidden;
+}
+.fade04-enter-active, .fade04-leave-active {
+    transition: opacity 0.4s;
+}
+.fade04-enter-from, .fade04-leave-to {
+    opacity: 0;
+}
 </style>

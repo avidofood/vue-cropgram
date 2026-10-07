@@ -15,14 +15,14 @@
                     :items="items"
                     :current-view-id="currentViewId"
                     :highest-order="highestOrder"
-                    @setView="$emit('setView', $event)"
-                    @updateItems="$emit('updateItems', $event)"
-                    @thumbnailError="$emit('thumbnailError', $event)"
+                    @set-view="$emit('set-view', $event)"
+                    @update-items="$emit('update-items', $event)"
+                    @thumbnail-error="$emit('thumbnail-error', $event)"
                 />
 
                 <selection-button
                     v-if="items.length < itemsLimit"
-                    @clicked="$emit('chooseFile')"
+                    @clicked="$emit('choose-file')"
                 />
             </div>
         </div>
@@ -34,6 +34,10 @@ import SelectionRoll from './CropSelectionRoll.vue';
 import SelectionButton from './CropSelectionButton.vue';
 
 export default {
+    components: {
+        SelectionRoll,
+        SelectionButton,
+    },
     props: {
         selectionText: {
             type: String,
@@ -59,31 +63,28 @@ export default {
             required: true,
         },
     },
-    components: {
-        SelectionRoll,
-        SelectionButton,
-    },
+    emits: ['set-view', 'update-items', 'thumbnail-error', 'choose-file'],
 };
 </script>
 
-<style lang="scss" scoped>
-.fade{
-	backface-visibility: hidden;
+<style scoped>
+.fade {
+    backface-visibility: hidden;
 }
-.fade-enter-active, .fade-leave-active{
-  transition: opacity 1s;
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 1s;
 }
-.fade-enter, .fade-leave-to{
-  opacity: 0;
+.fade-enter-from, .fade-leave-to {
+    opacity: 0;
 }
-.cg-selection-text{
+.cg-selection-text {
     text-transform: uppercase;
     padding: 0 .5rem;
     margin: .25rem 0;
     letter-spacing: 0.5px;
     color: #052D49;
 }
-.cg-selection-row{
-    display:flex;
+.cg-selection-row {
+    display: flex;
 }
 </style>
