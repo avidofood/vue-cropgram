@@ -4,6 +4,7 @@ import type {
 import type {
     InstagramCropperEmptyMetadata,
     InstagramCropperInstance,
+    InstagramCropperLabels,
     InstagramCropperMetadata,
     InstagramCropperProps,
 } from 'vue-instagram-cropper';
@@ -26,9 +27,10 @@ export type CropGramCropData = InstagramCropperMetadata | InstagramCropperEmptyM
 
 /**
  * Texts for screen readers. {index} is the number of the image, starting at 1. {order} is the
- * place of a chosen image in the result of save().
+ * place of a chosen image in the result of save(). canvas, remove and fullscreen come from
+ * vue-instagram-cropper, and CropGram gives them to the cropper.
  */
-export interface CropGramLabels {
+export interface CropGramLabels extends InstagramCropperLabels {
     /** The add button. Default: 'Add images'. */
     add?: string;
     /** The alt text of a thumbnail. Default: 'Image {index}'. */
@@ -61,10 +63,11 @@ export interface CropGramProps {
 }
 
 /**
- * Props of vue-instagram-cropper. CropGram gives them to the cropper. CropGram sets src itself.
+ * Props of vue-instagram-cropper. CropGram gives them to the cropper. CropGram sets src itself,
+ * and the texts of the cropper are in the labels prop of CropGram.
  * See https://github.com/avidofood/vue-instagram-cropper for the details.
  */
-export type CropGramCropperProps = Omit<InstagramCropperProps, 'src'>;
+export type CropGramCropperProps = Omit<InstagramCropperProps, 'src' | 'labels'>;
 
 export type CropGramMethods = {
     /** The chosen images in their order. Rejects if the browser cannot create an image. */

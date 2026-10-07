@@ -9,6 +9,7 @@
                 v-show="showCropper"
                 ref="view"
                 v-bind="cropperAttrs()"
+                :labels="cropperLabels"
                 :view="currentView"
                 v-on="forwardedListeners"
                 @image-remove="handleImageRemove"
@@ -56,7 +57,7 @@ import props from './core/props';
 // Gives each CropGram its own ids for aria-describedby
 let instances = 0;
 import emits, { cropperEvents } from './core/events';
-import { defaultLabels } from './core/labels';
+import { cropperLabelKeys, defaultLabels } from './core/labels';
 import CropView from './components/view/CropView.vue';
 import CropSelection from './components/selection/CropSelection.vue';
 
@@ -104,6 +105,12 @@ export default {
     computed: {
         texts() {
             return { ...defaultLabels, ...this.labels };
+        },
+        // Only the texts that labels sets. The cropper keeps its defaults for the others.
+        cropperLabels() {
+            return Object.fromEntries(cropperLabelKeys
+                .filter((key) => this.labels[key] !== undefined)
+                .map((key) => [key, this.labels[key]]));
         },
         forwardedListeners() {
             return Object.fromEntries(cropperEvents.map(

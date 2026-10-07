@@ -276,3 +276,23 @@ describe('failed reload with the real cropper', () => {
         expect(wrapper.emitted('new-image-drawn')).toHaveLength(2);
     });
 });
+
+describe('labels with the real cropper', () => {
+    it('names the buttons of the cropper with the texts of labels', async () => {
+        const wrapper = mountCropGram({
+            items: [landscape],
+            labels: { remove: 'Bild entfernen', fullscreen: 'Bild einpassen', canvas: 'Bildzuschnitt' },
+        });
+        await waitForImage(wrapper, landscape);
+        await settle();
+
+        const names = wrapper.findAll('.cropper-container [aria-label]')
+            .map((element) => element.attributes('aria-label'));
+        expect(names).toEqual(expect.arrayContaining(['Bild entfernen', 'Bild einpassen', 'Bildzuschnitt']));
+    });
+
+    it('declares the props of the stub', () => {
+        Object.keys(Stub.props)
+            .forEach((name) => expect(InstagramCropper.props, name).toHaveProperty(name));
+    });
+});

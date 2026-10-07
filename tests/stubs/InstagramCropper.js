@@ -31,6 +31,10 @@ export default defineComponent({
             type: Number,
             default: 0,
         },
+        labels: {
+            type: Object,
+            default: () => ({}),
+        },
     },
     emits: events,
     data() {

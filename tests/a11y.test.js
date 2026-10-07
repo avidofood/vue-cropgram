@@ -129,3 +129,33 @@ describe('description of the order', () => {
         expect(wrapper.find(`[id="${id}"]`).attributes()).toHaveProperty('hidden');
     });
 });
+
+describe('labels of the cropper', () => {
+    const cropperLabels = (wrapper) => wrapper.findComponent({ name: 'InstagramCropper' }).props('labels');
+
+    it('gives canvas, remove and fullscreen of labels to the cropper', async () => {
+        const wrapper = mountCropGram({
+            labels: {
+                add: 'Bilder hinzufügen',
+                canvas: 'Bildzuschnitt',
+                remove: 'Bild entfernen',
+                fullscreen: 'Bild einpassen',
+            },
+        });
+        await nextTick();
+
+        expect(cropperLabels(wrapper)).toEqual({
+            canvas: 'Bildzuschnitt', remove: 'Bild entfernen', fullscreen: 'Bild einpassen',
+        });
+        expect(wrapper.find('.cg-btn-upload').attributes('aria-label')).toBe('Bilder hinzufügen');
+    });
+
+    it('gives the cropper only the texts that labels sets', async () => {
+        const only = mountCropGram({ labels: { remove: 'Bild entfernen' } });
+        const none = mountCropGram({ labels: { add: 'Bilder hinzufügen' } });
+        await nextTick();
+
+        expect(cropperLabels(only)).toEqual({ remove: 'Bild entfernen' });
+        expect(cropperLabels(none)).toEqual({});
+    });
+});

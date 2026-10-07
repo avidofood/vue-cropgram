@@ -24,7 +24,8 @@ export default {
         type: String,
         default: '',
     },
-    // Texts for screen readers: add, image and choose. {index} is the number of the image.
+    // Texts for screen readers: add, image, choose and position of CropGram, and canvas, remove
+    // and fullscreen of the cropper. {index} is the number of the image.
     labels: {
         type: Object,
         default: () => ({}),

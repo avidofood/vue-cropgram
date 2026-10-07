@@ -5,6 +5,7 @@ import CropGram, {
     Plugin,
     type CropGramCropData,
     type CropGramCropperProps,
+    type CropGramLabels,
     type CropGramMethods,
     type CropGramProps,
     type CropGramResult,
@@ -26,6 +27,23 @@ const props: CropGramProps = {
 
 // @ts-expect-error labels are texts
 h(CropGram, { labels: { add: 1 } });
+
+// The texts of the cropper are in labels too
+h(CropGram, { labels: { remove: 'Bild entfernen', fullscreen: 'Bild einpassen', canvas: 'Bildzuschnitt' } });
+
+// @ts-expect-error remove is a text
+h(CropGram, { labels: { remove: true } });
+
+const allLabels: CropGramLabels = {
+    add: 'Bilder hinzufügen',
+    remove: 'Bild entfernen',
+    fullscreen: 'Bild einpassen',
+    canvas: 'Bildzuschnitt',
+};
+
+// CropGram sets the labels of the cropper itself
+// @ts-expect-error labels are no separate cropper prop
+const withLabels: CropGramCropperProps = { labels: {} };
 
 const cropperProps: CropGramCropperProps = {
     placeholder: 'Choose an image',
@@ -84,5 +102,5 @@ saved.then((results) => {
 const global: typeof CropGram = {} as GlobalComponents['CropGram'];
 
 export {
-    methods, thumbnail, global, withSrc, added,
+    methods, thumbnail, global, withSrc, added, allLabels, withLabels,
 };

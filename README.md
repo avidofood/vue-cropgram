@@ -158,7 +158,7 @@ The add button and `chooseFile()` let the user choose several files at once ([#5
 
 - `labels` (default: `{}`, type: Object)
 
-Texts for screen readers, for example in your language. `{index}` is the number of the image, starting at 1. `{order}` is the place of a chosen image in the result of `save()`. A text that you leave out keeps its default.
+Texts for screen readers, for example in your language. `{index}` is the number of the image, starting at 1. `{order}` is the place of a chosen image in the result of `save()`. A text that you leave out keeps its default. CropGram gives `canvas`, `remove` and `fullscreen` to the cropper.
 
 ```html
 <crop-gram :labels="{ add: 'Bilder hinzufügen', image: 'Bild {index}', choose: 'Bild {index} auswählen' }" />
@@ -170,6 +170,9 @@ Texts for screen readers, for example in your language. `{index}` is the number 
 | `image` | `Image {index}` | alt text of a thumbnail |
 | `choose` | `Choose image {index}` | name of the button with the order number |
 | `position` | `Number {order}` | description of that button for a chosen image |
+| `canvas` | default of the cropper | name of the cropper canvas, with the keys |
+| `remove` | `Remove image` | name of the remove button of the cropper |
+| `fullscreen` | `Fit or fill the image` | name of the fit or fill button of the cropper |
 
 ### Accessibility
 
