@@ -159,3 +159,22 @@ describe('labels of the cropper', () => {
         expect(cropperLabels(none)).toEqual({});
     });
 });
+
+describe('labels set to null or changed later', () => {
+    const cropperLabels = (wrapper) => wrapper.findComponent({ name: 'InstagramCropper' }).props('labels');
+
+    it('keeps the defaults with labels null and follows later changes', async () => {
+        const wrapper = mountCropGram({ labels: null });
+        await nextTick();
+
+        expect(wrapper.find('.cg-btn-upload').attributes('aria-label')).toBe('Add images');
+        expect(cropperLabels(wrapper)).toEqual({});
+
+        await wrapper.setProps({ labels: { remove: 'Bild entfernen', add: 'Bilder hinzufügen' } });
+        expect(cropperLabels(wrapper)).toEqual({ remove: 'Bild entfernen' });
+        expect(wrapper.find('.cg-btn-upload').attributes('aria-label')).toBe('Bilder hinzufügen');
+
+        await wrapper.setProps({ labels: null });
+        expect(cropperLabels(wrapper)).toEqual({});
+    });
+});

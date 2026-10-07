@@ -108,9 +108,12 @@ export default {
         },
         // Only the texts that labels sets. The cropper keeps its defaults for the others.
         cropperLabels() {
+            // Vue lets an optional prop be null
+            const labels = this.labels || {};
+
             return Object.fromEntries(cropperLabelKeys
-                .filter((key) => this.labels[key] !== undefined)
-                .map((key) => [key, this.labels[key]]));
+                .filter((key) => labels[key] !== undefined)
+                .map((key) => [key, labels[key]]));
         },
         forwardedListeners() {
             return Object.fromEntries(cropperEvents.map(

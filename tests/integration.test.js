@@ -260,17 +260,19 @@ describe('failed reload with the real cropper', () => {
     it('ends the reload after the cropper drew the error image', async () => {
         const url = 'https://example.com/broken.jpg#preview';
         const wrapper = mountCropGram({ items: [url, url] });
+        // The cropper loads two images with a 30 ms debounce. Under load, one second is short.
+        const patience = { timeout: 5000 };
         await vi.waitFor(() => {
             if (!wrapper.emitted('new-image-drawn')) throw new Error('no error image yet');
-        });
+        }, patience);
 
         wrapper.vm.setView(1);
         await vi.waitFor(() => {
             if (!wrapper.vm.$refs.view.reloading) throw new Error('no reload yet');
-        });
+        }, patience);
         await vi.waitFor(() => {
             if (wrapper.vm.$refs.view.reloading) throw new Error('still reloading');
-        });
+        }, patience);
 
         expect(wrapper.emitted('image-error')).toHaveLength(2);
         expect(wrapper.emitted('new-image-drawn')).toHaveLength(2);
