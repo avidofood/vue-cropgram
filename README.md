@@ -60,10 +60,10 @@ The plugin registers the component as `CropGram`. You can use it as `<CropGram>`
 
 ### TypeScript
 
-The package contains type declarations for the props, the events, the methods, the result of `save()` and the plugin.
+The package contains type declarations for the props, the events, the methods, the result of `save()` and the plugin. The types of the cropper props and of the crop data come from vue-instagram-cropper.
 
 ```typescript
-import type { CropGramResult } from 'vue-cropgram';
+import type { CropGramCropperProps, CropGramResult } from 'vue-cropgram';
 ```
 
 ## Usage - (or to make it runnable 🏃‍♂️)
@@ -219,7 +219,7 @@ Version 2.0 works with Vue 3. These are the changes for your code:
 
 1. Vue 3.2 or newer is required. For Vue 2, stay on 1.x: `npm install vue-cropgram@1x`.
 2. Register the component on the app: `app.component('CropGram', CropGram)` instead of `Vue.component('crop-gram', CropGram)`, and `app.use(Plugin)` instead of `Vue.use(Plugin)`. The plugin registers the name `CropGram`. The tag `<crop-gram>` still works.
-3. The cropper is vue-instagram-cropper 2.x. CropGram passes its props and events on as before. Read the [migration notes of the cropper](https://github.com/avidofood/vue-instagram-cropper#migration-from-1x-to-2x) for changes of the cropper itself.
+3. The cropper is vue-instagram-cropper 2.x. CropGram passes its props and events on as before. Read the [upgrade notes of the cropper](https://github.com/avidofood/vue-instagram-cropper#upgrade-from-1x-to-20) for changes of the cropper itself.
 4. Attributes: `class` and `style` stay on the root element, as in 1.x. All other attributes and listeners go only to the cropper. In 1.x, other attributes were also on the root element and on the `<form>` around the cropper.
 5. Listeners for events that CropGram does not emit, for example `@image-remove-onload`, now reach the cropper. In 1.x, these listeners never ran.
 6. Events of the cropper now carry their arguments, for example the file of `file-size-exceed` and the cropper of `init`. In 1.x, only `update` had an argument. Listeners without parameters work as before.
