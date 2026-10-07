@@ -12,8 +12,7 @@
             v-on="forwardedListeners"
             @file-loaded="handleFileLoaded"
             @loading-end="handleLoadingEnd"
-            @new-image-drawn="handleImageShown('new-image-drawn', $event)"
-            @image-error="handleImageShown('image-error', $event)"
+            @new-image-drawn="handleNewImageDrawn"
         />
     </form>
 </template>
@@ -24,7 +23,7 @@ import { cropperEvents, handledCropperEvents } from '../../core/events';
 import cropperUrl from '../../lib/cropperUrl';
 
 // CropView handles these events itself
-const ownHandlers = ['file-loaded', 'loading-end', 'new-image-drawn', 'image-error'];
+const ownHandlers = ['file-loaded', 'loading-end', 'new-image-drawn'];
 
 const forwardedEvents = [...cropperEvents, ...handledCropperEvents]
     .filter((name) => !ownHandlers.includes(name));
@@ -115,11 +114,12 @@ export default {
          * From this point on the image is fully loaded, and we can update the metadata
          */
         /**
-         * The cropper shows a newly loaded image, or the error image. A reload is complete.
+         * The cropper shows a newly loaded image, or the error image after a failed load.
+         * A reload is complete. On image-error, the cropper still shows the previous image.
          */
-        handleImageShown(name, ...args) {
+        handleNewImageDrawn(...args) {
             this.reloading = false;
-            this.$emit(name, ...args);
+            this.$emit('new-image-drawn', ...args);
         },
         handleLoadingEnd(...args) {
             this.$emit('loading-end', ...args);

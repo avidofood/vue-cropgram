@@ -151,10 +151,16 @@ describe('addFiles()', () => {
         const wrapper = mountCropGram({ items: [] });
         await nextTick();
 
-        const adding = wrapper.vm.addFiles([image('a.jpg')]);
+        // The browser stubs load this file after 200 ms
+        const first = wrapper.vm.addFiles([image('a-delay-200.jpg')]);
+        const second = wrapper.vm.addFiles([image('b.jpg')]);
+        // The first call loads its file now, the second one waits
+        await vi.waitFor(() => expect(URL.createObjectURL).toHaveBeenCalledTimes(1));
         wrapper.unmount();
 
-        await expect(adding).resolves.toBe(0);
+        await expect(first).resolves.toBe(0);
+        await expect(second).resolves.toBe(0);
+        expect(URL.createObjectURL).toHaveBeenCalledTimes(1);
         expect(wrapper.emitted('new-image')).toBeUndefined();
     });
 

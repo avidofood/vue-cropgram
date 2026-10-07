@@ -255,3 +255,24 @@ describe('review of the feature round with the real cropper', () => {
         expect(results[1].name).toBe('Second Photo.jpg');
     });
 });
+
+describe('failed reload with the real cropper', () => {
+    it('ends the reload after the cropper drew the error image', async () => {
+        const url = 'https://example.com/broken.jpg#preview';
+        const wrapper = mountCropGram({ items: [url, url] });
+        await vi.waitFor(() => {
+            if (!wrapper.emitted('new-image-drawn')) throw new Error('no error image yet');
+        });
+
+        wrapper.vm.setView(1);
+        await vi.waitFor(() => {
+            if (!wrapper.vm.$refs.view.reloading) throw new Error('no reload yet');
+        });
+        await vi.waitFor(() => {
+            if (wrapper.vm.$refs.view.reloading) throw new Error('still reloading');
+        });
+
+        expect(wrapper.emitted('image-error')).toHaveLength(2);
+        expect(wrapper.emitted('new-image-drawn')).toHaveLength(2);
+    });
+});

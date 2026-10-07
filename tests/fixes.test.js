@@ -409,6 +409,29 @@ describe('open findings of the last short review (Codex)', () => {
     });
 });
 
+describe('short review of the feature fixes (Codex)', () => {
+    it('keeps a failed reload of the same URL blocked until the cropper drew the error image', async () => {
+        const url = '/images/a.jpg#preview';
+        const wrapper = mountCropGram({
+            items: [url, url],
+            // A listener that goes back at once when the image fails
+            onImageError: () => wrapper.vm.setView(0),
+        });
+        await nextTick();
+        const cropper = cropperOf(wrapper).vm;
+        cropper.drag(-40);
+        cropper.instantLoad = false;
+        wrapper.vm.setView(1);
+        await flushPromises();
+
+        // The reload fails. The cropper still shows the first image when it emits image-error.
+        cropper.$emit('image-error');
+        await flushPromises();
+
+        expect(wrapper.vm.sortedItems[1].cropper).toEqual({});
+    });
+});
+
 describe('full review of the feature round (Codex)', () => {
     it('does not store the crop of the shown image in a reloading item with the same URL', async () => {
         const url = '/images/a.jpg#preview';
