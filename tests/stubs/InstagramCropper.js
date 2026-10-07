@@ -58,16 +58,21 @@ export default defineComponent({
             const src = this.pendingSrc;
 
             if (typeof src === 'string') {
-                this.img = createImage(src, src);
+                // CropGram gives an absolute URL with a fragment. The name is the path.
+                this.img = createImage(new URL(src).pathname, src);
                 this.imgData = {
                     width: 600, height: 600, startX: 0, startY: 0,
                 };
             } else if (src) {
-                // Like the real cropper: a new width of the image emits zoom before the drawing
+                // Like the real cropper: a new width of the image emits zoom before the drawing.
+                // The same image with the same crop does not draw again.
                 const zoomed = src.imgData.width !== this.imgData.width;
+                const imageChanged = src.img !== this.img;
                 this.img = src.img;
                 this.imgData = { ...src.imgData };
                 if (zoomed) this.$emit('zoom');
+                if (zoomed || imageChanged) this.$emit('draw');
+                return;
             } else {
                 this.img = null;
                 return;

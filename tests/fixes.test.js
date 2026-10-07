@@ -300,7 +300,7 @@ describe('review of 2.0.0-dev (Codex Astra)', () => {
         wrapper.vm.setView(0);
         await nextTick();
 
-        expect(cropper.$props.src).toBe(urls[0]);
+        expect(new URL(cropper.$props.src).pathname).toBe(urls[0]);
     });
 
     it('rejects save() when the browser cannot create a blob', async () => {
@@ -312,5 +312,55 @@ describe('review of 2.0.0-dev (Codex Astra)', () => {
         cropper.outputWidth = 0;
 
         await expect(wrapper.vm.save()).rejects.toThrow('could not create the image');
+    });
+});
+
+describe('short review of the fixes (Codex)', () => {
+    it('counts a move back to the stored crop as a change', async () => {
+        const wrapper = mountCropGram({ items: urls.slice(0, 2) });
+        await nextTick();
+        const cropper = cropperOf(wrapper).vm;
+        cropper.drag(-30);
+        wrapper.vm.setView(1);
+        await nextTick();
+        wrapper.vm.setView(0);
+        await nextTick();
+        const moves = wrapper.emitted('move').length;
+
+        // Away from the stored crop and back, for example a bounce back to the edge
+        cropper.drag(30);
+        cropper.drag(-30);
+
+        expect(wrapper.emitted('move')).toHaveLength(moves + 2);
+    });
+
+    it('counts the first move after a new file', async () => {
+        const wrapper = mountCropGram({ items: [] });
+        await nextTick();
+        const cropper = cropperOf(wrapper).vm;
+        cropper.loadFile('photo.jpg');
+        await nextTick();
+
+        // The cropper shows the new image already and does not draw it again
+        cropper.drag(-10);
+
+        expect(wrapper.emitted('move')).toHaveLength(1);
+    });
+
+    it('loads an image again when the same URL is twice in items', async () => {
+        const wrapper = mountCropGram({ items: [urls[0], urls[0]] });
+        await nextTick();
+        const cropper = cropperOf(wrapper).vm;
+        cropper.drag(-40);
+
+        wrapper.vm.setView(1);
+        await nextTick();
+
+        // The second item starts with its own load, not with the crop of the first
+        expect(cropper.imgData.startX).toBe(0);
+        cropper.drag(-10);
+        const results = await wrapper.vm.save();
+        expect(results[0].blob.imgData.startX).toBe(-40);
+        expect(results[1].blob.imgData.startX).toBe(-10);
     });
 });

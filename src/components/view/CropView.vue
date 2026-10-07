@@ -19,6 +19,7 @@
 <script>
 import InstagramCropper from 'vue-instagram-cropper';
 import { cropperEvents, handledCropperEvents } from '../../core/events';
+import cropperUrl from '../../lib/cropperUrl';
 
 // CropView handles these two events itself
 const ownHandlers = ['file-loaded', 'loading-end'];
@@ -74,7 +75,7 @@ export default {
             }
 
             if (Object.entries(val.cropper).length === 0 && val.cropper.constructor === Object) {
-                this.cropper = val.url;
+                this.cropper = cropperUrl(val);
                 return;
             }
 

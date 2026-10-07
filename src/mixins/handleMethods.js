@@ -48,6 +48,11 @@ export default {
             this.hasChanged();
         },
         handleDraw(...args) {
+            // The cropper drew the current image, so a restore of a stored crop is complete
+            if (this.cropperShows(this.sortedItem(this.currentViewId))) {
+                this.restoredSrc = this.$refs.view.cropper;
+            }
+
             this.$emit('draw', ...args);
         },
         handleThumbnailError(index) {

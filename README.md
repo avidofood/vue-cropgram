@@ -137,6 +137,8 @@ Perfect to hide the cropper, but still shows the selected images. If you want to
 
 Contains all your pictures you want to contain. Important, they must be valid URLs. Visit the demo page to have a look. When CropGram mounts, it reads the URLs once. To add an image later, call `addNewUrl(url)`.
 
+CropGram gives the cropper an absolute URL with a fragment, for example `https://example.com/a.jpg#cropgram-1`. The browser does not send the fragment to the server. With it, the same URL twice in `items` gives two separate images. A URL that already has a fragment stays as it is. The `update` event shows this URL in `img.src`.
+
 - `mimeType` (default: `image/jpeg`, type: String)
 - `compression` (default: `0.8`, type: Number)
 - `selectionText` (default: `Chosen Images`, type: String)

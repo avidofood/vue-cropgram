@@ -36,6 +36,9 @@ Version 2.0 works with Vue 3. The README has a section "Migration from 1.x to 2.
 - `addNewUrl()` keeps the latest crop of the current image. Before, a moved image from `items` was missing in the result of `save()` after `addNewUrl()`.
 - A `save()` in a `has-changed`, `move` or `zoom` listener includes the change. Before, the image was marked as changed after these events.
 - Storing the crop of the current image no longer reloads the image in the cropper. Before, the previous image sometimes replaced a newly chosen file.
+- A move back to the previous position counts as a change. An example is the bounce of the image back to the edge.
+- The same URL twice in `items` gives two separate images. Before, the second item showed the crop of the first one.
+- A relative URL in `items` loads from the base URL of the page, also with `forceCacheBreak`. The cropper gets an absolute URL with a fragment such as `#cropgram-1`.
 - A move in the cropper without a current image no longer throws a `TypeError`.
 - Photos from a phone camera show the right way up ([#7](https://github.com/avidofood/vue-cropgram/issues/7)). vue-instagram-cropper 2.x lets the browser apply the EXIF orientation. Before, the photo turned twice.
 

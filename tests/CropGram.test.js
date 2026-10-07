@@ -5,7 +5,7 @@ import { createApp, h, nextTick } from 'vue';
 import { flushPromises, mount } from '@vue/test-utils';
 import CropGram, { Plugin } from '../src/index';
 import {
-    cropperOf, mountCropGram, orderBadges, orderNumbers, thumbnails, urls,
+    cropperOf, cropperSrc, mountCropGram, orderBadges, orderNumbers, thumbnails, urls,
 } from './helpers';
 
 vi.mock('vue-instagram-cropper', () => import('./stubs/InstagramCropper'));
@@ -17,7 +17,7 @@ describe('items', () => {
 
         expect(thumbnails(wrapper).map((img) => img.attributes('src'))).toEqual(urls);
         expect(orderNumbers(wrapper)).toEqual(['1', '2', '3']);
-        expect(cropperOf(wrapper).props('src')).toBe(urls[0]);
+        expect(cropperSrc(wrapper)).toBe(urls[0]);
         expect(thumbnails(wrapper)[0].classes()).toContain('active');
     });
 
@@ -26,7 +26,7 @@ describe('items', () => {
         await nextTick();
 
         expect(wrapper.find('.cg-selection').exists()).toBe(false);
-        expect(cropperOf(wrapper).props('src')).toBeNull();
+        expect(cropperSrc(wrapper)).toBeNull();
     });
 
     it('shows the selection text and its class', async () => {
@@ -54,7 +54,7 @@ describe('setView()', () => {
 
         await thumbnails(wrapper)[1].trigger('click');
 
-        expect(cropperOf(wrapper).props('src')).toBe(urls[1]);
+        expect(cropperSrc(wrapper)).toBe(urls[1]);
         expect(wrapper.emitted('set-view')).toEqual([[1]]);
         expect(thumbnails(wrapper)[1].classes()).toContain('active');
     });
@@ -69,7 +69,7 @@ describe('setView()', () => {
         wrapper.vm.setView(0);
         await nextTick();
 
-        expect(cropperOf(wrapper).props('src').imgData.startX).toBe(-50);
+        expect(cropperSrc(wrapper).imgData.startX).toBe(-50);
     });
 });
 
@@ -155,7 +155,7 @@ describe('new images', () => {
         wrapper.vm.addNewUrl('/images/new.jpg');
         await nextTick();
 
-        expect(cropperOf(wrapper).props('src')).toBe('/images/new.jpg');
+        expect(cropperSrc(wrapper)).toBe('/images/new.jpg');
         expect(wrapper.emitted('new-image')).toHaveLength(1);
         await expect(wrapper.vm.save()).resolves.toEqual([{ url: '/images/new.jpg' }]);
     });
@@ -210,7 +210,7 @@ describe('remove', () => {
         await nextTick();
 
         expect(thumbnails(wrapper).map((img) => img.attributes('src'))).toEqual(urls.slice(0, 2));
-        expect(cropperOf(wrapper).props('src')).toBe(urls[1]);
+        expect(cropperSrc(wrapper)).toBe(urls[1]);
         expect(wrapper.emitted('image-remove')).toHaveLength(1);
         expect(wrapper.emitted('has-changed')).toHaveLength(1);
     });
@@ -223,7 +223,7 @@ describe('remove', () => {
         await nextTick();
 
         expect(orderNumbers(wrapper)).toEqual(['1', '2']);
-        expect(cropperOf(wrapper).props('src')).toBe(urls[1]);
+        expect(cropperSrc(wrapper)).toBe(urls[1]);
     });
 });
 

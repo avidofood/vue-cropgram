@@ -1,3 +1,5 @@
+import cropperUrl from '../lib/cropperUrl';
+
 // The cropper adds a cors parameter to the URL with forceCacheBreak
 const withoutCacheBreak = (url) => {
     try {
@@ -8,9 +10,6 @@ const withoutCacheBreak = (url) => {
         return url;
     }
 };
-
-// Canvas pixels. The cropper calculates the size again from the scale, with rounding errors.
-const TOLERANCE = 0.01;
 
 export default {
     methods: {
@@ -37,25 +36,24 @@ export default {
 
             if (item.cropper.img) return img === item.cropper.img;
 
-            return Boolean(item.url) && withoutCacheBreak(img.src) === withoutCacheBreak(item.url);
+            return Boolean(item.url)
+                && withoutCacheBreak(img.src) === withoutCacheBreak(cropperUrl(item));
+        },
+        /**
+         * True while the cropper shows a stored crop again after a view change. The cropper
+         * emits zoom and move for it. The restore ends when the cropper draws the current image.
+         */
+        isRestoring() {
+            const src = this.$refs.view.cropper;
+
+            return src !== null && typeof src === 'object' && src !== this.restoredSrc;
         },
         /**
          * True if a move or a zoom of the cropper is a change by the user. The cropper also emits
          * move and zoom while it loads an image, and when it shows a stored crop again.
          */
         isUserChange() {
-            const item = this.sortedItem(this.currentViewId);
-
-            if (!this.cropperShows(item)) return false;
-
-            const stored = item.cropper.imgData;
-
-            if (!stored) return true;
-
-            const { imgData } = this.cropper.getMetadata();
-
-            return ['width', 'height', 'startX', 'startY']
-                .some((key) => Math.abs(imgData[key] - stored[key]) > TOLERANCE);
+            return this.cropperShows(this.sortedItem(this.currentViewId)) && !this.isRestoring();
         },
         /**
          * Stores the crop of the current image. Only if the cropper shows this image,

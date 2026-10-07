@@ -29,10 +29,12 @@ const mountCropGram = (props = {}) => mount(CropGram, {
 
 const cropperOf = (wrapper) => wrapper.findComponent(InstagramCropper).vm;
 
+// The URL of the image in the cropper, without the fragment that CropGram adds
+const shownUrl = (wrapper) => cropperOf(wrapper).getMetadata().img?.src.split('#')[0];
+
 // Waits until the cropper shows the image with this URL
 const waitForImage = (wrapper, url) => vi.waitFor(() => {
-    const { img } = cropperOf(wrapper).getMetadata();
-    if (!img || img.src !== url) throw new Error(`The cropper does not show ${url} yet`);
+    if (shownUrl(wrapper) !== url) throw new Error(`The cropper does not show ${url} yet`);
 });
 
 const settle = () => new Promise((resolve) => { setTimeout(resolve, 50); });
@@ -108,9 +110,7 @@ describe('CropGram with the real cropper', () => {
         await waitForImage(wrapper, portrait);
         await settle();
         wrapper.vm.setView(0);
-        await vi.waitFor(() => {
-            if (cropperOf(wrapper).getMetadata().img?.src !== landscape) throw new Error('not yet');
-        });
+        await waitForImage(wrapper, landscape);
         await settle();
 
         expect(cropperOf(wrapper).getMetadata().imgData).toEqual(moved);
@@ -154,5 +154,35 @@ describe('CropGram with the real cropper', () => {
 
         expect(wrapper.emitted('image-remove')).toHaveLength(1);
         await expect(wrapper.vm.save()).resolves.toEqual([{ url: landscape }]);
+    });
+});
+
+describe('URLs with the real cropper', () => {
+    it('records a change of a relative URL with forceCacheBreak and a base element', async () => {
+        const base = document.createElement('base');
+        base.href = 'https://cdn.example.com/assets/';
+        document.head.append(base);
+        try {
+            const wrapper = mount(CropGram, {
+                props: { items: ['photo-800x600.jpg'] },
+                attrs: { forceCacheBreak: true },
+                attachTo: document.body,
+            });
+            await vi.waitFor(() => {
+                const { img } = cropperOf(wrapper).getMetadata();
+                if (!img) throw new Error('no image yet');
+            });
+            await settle();
+
+            // The browser loads the image from the base URL
+            expect(cropperOf(wrapper).getMetadata().img.src)
+                .toMatch(/^https:\/\/cdn\.example\.com\/assets\/photo-800x600\.jpg\?cors=/);
+            cropperOf(wrapper).zoom(true, 20);
+            await settle();
+            const [result] = await wrapper.vm.save();
+            expect(result.blob).toBeInstanceOf(Blob);
+        } finally {
+            base.remove();
+        }
     });
 });

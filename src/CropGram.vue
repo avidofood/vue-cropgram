@@ -69,6 +69,10 @@ export default {
             currentView: null,
             cropper: null,
             valuesChanged: false,
+            // The stored crop that the cropper shows again, see isRestoring()
+            restoredSrc: null,
+            // Gives every item a key, see lib/cropperUrl.js
+            nextKey: 0,
         };
     },
     computed: {
@@ -100,8 +104,9 @@ export default {
          * @param {string} url    [The url of the image]
          */
         addItem(order, thumbnail, cropper = {}, url = '', changed = false) {
+            this.nextKey += 1;
             this.add({
-                order, thumbnail, cropper, url, changed,
+                key: this.nextKey, order, thumbnail, cropper, url, changed,
             });
         },
         addNewUrl(url) {
@@ -154,6 +159,9 @@ export default {
             this.setViewId(nextId);
 
             this.updateCurrentView();
+
+            // The cropper already shows this image. Its crop is no restore.
+            this.restoredSrc = this.sortedItem(nextId).cropper;
 
             this.$emit('new-image');
 

@@ -13,6 +13,12 @@ export const mountCropGram = (props = {}, options = {}) => mount(CropGram, {
 
 export const cropperOf = (wrapper) => wrapper.findComponent({ name: 'InstagramCropper' });
 
+// The path of the URL that CropGram gave the cropper, or the crop data for a stored crop
+export const cropperSrc = (wrapper) => {
+    const src = cropperOf(wrapper).props('src');
+    return typeof src === 'string' ? new URL(src).pathname : src;
+};
+
 export const thumbnails = (wrapper) => wrapper.findAll('.roll-element img');
 
 export const orderBadges = (wrapper) => wrapper.findAll('.roll-element-order');
