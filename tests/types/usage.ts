@@ -21,7 +21,7 @@ const props: CropGramProps = {
     selectionText: 'Your images',
     showCropper: false,
     multiple: true,
-    labels: { add: 'Bilder hinzufügen', image: 'Bild {index}' },
+    labels: { add: 'Bilder hinzufügen', image: 'Bild {index}', position: 'Platz {order}' },
 };
 
 // @ts-expect-error labels are texts

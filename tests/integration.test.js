@@ -216,3 +216,42 @@ describe('addFiles() with the real cropper', () => {
         expect(results.map((result) => result.blob.size > 0)).toEqual([true, true]);
     });
 });
+
+describe('review of the feature round with the real cropper', () => {
+    it('keeps the crops apart when the same URL with a fragment is twice in items', async () => {
+        const url = 'https://example.com/photo-800x600.jpg#preview';
+        const wrapper = mountCropGram({ items: [url, url] });
+        await waitForImage(wrapper, 'https://example.com/photo-800x600.jpg');
+        await settle();
+        cropperOf(wrapper).zoom(true, 20);
+        await settle();
+
+        // Back to the first item within the debounce of the cropper
+        wrapper.vm.setView(1);
+        await new Promise((resolve) => { setTimeout(resolve, 5); });
+        wrapper.vm.setView(0);
+        await settle();
+
+        expect(wrapper.vm.sortedItems[1].cropper).toEqual({});
+        const [first, second] = await wrapper.vm.save();
+        expect(first.blob).toBeInstanceOf(Blob);
+        expect(second).toEqual({ url });
+    });
+
+    it('names a chosen file that replaces the shown image', async () => {
+        const wrapper = mountCropGram({ items: [landscape] });
+        await waitForImage(wrapper, landscape);
+        await settle();
+
+        const input = wrapper.find('.cropper-container input[type="file"]');
+        const file = new File([new Uint8Array([0xFF, 0xD8, 0xFF, 0xD9])], 'Second Photo.png', { type: 'image/png' });
+        Object.defineProperty(input.element, 'files', { value: [file], configurable: true });
+        await input.trigger('change');
+        await vi.waitFor(() => {
+            if (!wrapper.emitted('new-image')) throw new Error('no new image yet');
+        });
+
+        const results = await wrapper.vm.save();
+        expect(results[1].name).toBe('Second Photo.jpg');
+    });
+});

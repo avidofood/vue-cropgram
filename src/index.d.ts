@@ -24,7 +24,10 @@ export type CropGramResult =
  */
 export type CropGramCropData = InstagramCropperMetadata | InstagramCropperEmptyMetadata;
 
-/** Texts for screen readers. {index} is the number of the image, starting at 1. */
+/**
+ * Texts for screen readers. {index} is the number of the image, starting at 1. {order} is the
+ * place of a chosen image in the result of save().
+ */
 export interface CropGramLabels {
     /** The add button. Default: 'Add images'. */
     add?: string;
@@ -32,6 +35,8 @@ export interface CropGramLabels {
     image?: string;
     /** The button with the order number. Default: 'Choose image {index}'. */
     choose?: string;
+    /** The description of the button of a chosen image. Default: 'Number {order}'. */
+    position?: string;
 }
 
 export interface CropGramProps {

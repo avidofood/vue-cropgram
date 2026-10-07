@@ -18,6 +18,7 @@
             class="roll-element-order"
             :aria-label="withIndex(labels.choose, index)"
             :aria-pressed="item.order > 0 ? 'true' : 'false'"
+            :aria-describedby="item.order > 0 ? orderId : undefined"
             @click.prevent.stop="$emit('toggle', index)"
         >
             <span
@@ -34,10 +35,16 @@
                 />
             </span>
         </button>
+        <span
+            v-if="item.order > 0"
+            :id="orderId"
+            class="cg-visually-hidden"
+            v-text="withOrder(labels.position, item.order)"
+        />
     </div>
 </template>
 <script>
-import { withIndex } from '../../core/labels';
+import { withIndex, withOrder } from '../../core/labels';
 
 export default {
     props: {
@@ -57,14 +64,32 @@ export default {
             type: Object,
             required: true,
         },
+        orderId: {
+            type: String,
+            required: true,
+        },
     },
     emits: ['set-view', 'thumbnail-error', 'toggle'],
     methods: {
         withIndex,
+        withOrder,
     },
 };
 </script>
 <style scoped>
+/* Only for screen readers */
+.cg-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
 /* The buttons look like the image and the circle of 1.x */
 .roll-element-view,
 .roll-element-order {

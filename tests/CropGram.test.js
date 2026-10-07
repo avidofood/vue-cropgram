@@ -290,7 +290,8 @@ describe('events of the cropper', () => {
         ['loading-end', undefined],
         ['image-error', undefined],
     ])('emits %s once, with the argument of the cropper', async (name, argument) => {
-        const wrapper = mountCropGram();
+        // Without images, so that no load of the cropper emits these events too
+        const wrapper = mountCropGram({ items: [] });
         await nextTick();
 
         cropperOf(wrapper).vm.$emit(name, argument);

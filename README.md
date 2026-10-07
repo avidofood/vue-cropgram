@@ -158,7 +158,7 @@ The add button and `chooseFile()` let the user choose several files at once ([#5
 
 - `labels` (default: `{}`, type: Object)
 
-Texts for screen readers, for example in your language. `{index}` is the number of the image, starting at 1. A text that you leave out keeps its default.
+Texts for screen readers, for example in your language. `{index}` is the number of the image, starting at 1. `{order}` is the place of a chosen image in the result of `save()`. A text that you leave out keeps its default.
 
 ```html
 <crop-gram :labels="{ add: 'Bilder hinzufügen', image: 'Bild {index}', choose: 'Bild {index} auswählen' }" />
@@ -169,10 +169,11 @@ Texts for screen readers, for example in your language. `{index}` is the number 
 | `add` | `Add images` | name of the add button |
 | `image` | `Image {index}` | alt text of a thumbnail |
 | `choose` | `Choose image {index}` | name of the button with the order number |
+| `position` | `Number {order}` | description of that button for a chosen image |
 
 ### Accessibility
 
-The thumbnails, the order numbers and the add button are buttons. Keyboard users reach them with Tab and use them with Enter or Space. The current thumbnail has `aria-current="true"`. The button with the order number has `aria-pressed`, which is `true` for a chosen image. The add button keeps its focus ring for the keyboard.
+The thumbnails, the order numbers and the add button are buttons. Keyboard users reach them with Tab and use them with Enter or Space. The current thumbnail has `aria-current="true"`. The button with the order number has `aria-pressed`, which is `true` for a chosen image. For a chosen image, its description tells the place in the result of `save()`. The add button keeps its focus ring for the keyboard.
  
 
 

@@ -408,3 +408,25 @@ describe('open findings of the last short review (Codex)', () => {
         expect(results[1].blob.imgData.startX).toBe(-10);
     });
 });
+
+describe('full review of the feature round (Codex)', () => {
+    it('does not store the crop of the shown image in a reloading item with the same URL', async () => {
+        const url = '/images/a.jpg#preview';
+        const wrapper = mountCropGram({ items: [url, url] });
+        await nextTick();
+        const cropper = cropperOf(wrapper).vm;
+        cropper.drag(-40);
+
+        // The reload of the second item has not finished when the view comes back
+        cropper.instantLoad = false;
+        wrapper.vm.setView(1);
+        await flushPromises();
+        wrapper.vm.setView(0);
+        await flushPromises();
+
+        expect(wrapper.vm.sortedItems[1].cropper).toEqual({});
+        const results = await wrapper.vm.save();
+        expect(results[0].blob.imgData.startX).toBe(-40);
+        expect(results[1]).toEqual({ url });
+    });
+});

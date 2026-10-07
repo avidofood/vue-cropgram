@@ -12,6 +12,8 @@
             v-on="forwardedListeners"
             @file-loaded="handleFileLoaded"
             @loading-end="handleLoadingEnd"
+            @new-image-drawn="handleImageShown('new-image-drawn', $event)"
+            @image-error="handleImageShown('image-error', $event)"
         />
     </form>
 </template>
@@ -21,8 +23,8 @@ import InstagramCropper from 'vue-instagram-cropper';
 import { cropperEvents, handledCropperEvents } from '../../core/events';
 import cropperUrl from '../../lib/cropperUrl';
 
-// CropView handles these two events itself
-const ownHandlers = ['file-loaded', 'loading-end'];
+// CropView handles these events itself
+const ownHandlers = ['file-loaded', 'loading-end', 'new-image-drawn', 'image-error'];
 
 const forwardedEvents = [...cropperEvents, ...handledCropperEvents]
     .filter((name) => !ownHandlers.includes(name));
@@ -48,6 +50,8 @@ export default {
         return {
             cropper: null,
             readSuccesfully: false,
+            // True from a reload of the same src until the cropper shows the new image
+            reloading: false,
         };
     },
     computed: {
@@ -69,6 +73,8 @@ export default {
     },
     methods: {
         convertCropper(val, oldVal) {
+            this.reloading = false;
+
             if (!val) {
                 this.cropper = null;
                 return;
@@ -81,6 +87,8 @@ export default {
                 // The cropper loads only a new src, so it gets null first. Its debounce of
                 // 30 ms then loads the URL once.
                 if (src === this.cropper && oldVal && oldVal.key !== val.key) {
+                    // Until then, the cropper still shows the image of the other item
+                    this.reloading = true;
                     this.cropper = null;
                     this.$nextTick(() => {
                         if (this.view === val) this.cropper = src;
@@ -106,6 +114,13 @@ export default {
         /**
          * From this point on the image is fully loaded, and we can update the metadata
          */
+        /**
+         * The cropper shows a newly loaded image, or the error image. A reload is complete.
+         */
+        handleImageShown(name, ...args) {
+            this.reloading = false;
+            this.$emit(name, ...args);
+        },
         handleLoadingEnd(...args) {
             this.$emit('loading-end', ...args);
 

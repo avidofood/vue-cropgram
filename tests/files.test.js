@@ -179,3 +179,30 @@ describe('addFiles()', () => {
         expect(wrapper.emitted('move')).toHaveLength(1);
     });
 });
+
+describe('addFiles() called twice', () => {
+    it('adds the files in the order of the calls and emits limit-reached for the call that does not fit', async () => {
+        const wrapper = mountCropGram({ items: urls.slice(0, 2), itemsLimit: 3 });
+        await nextTick();
+        const limits = () => (wrapper.emitted('limit-reached') || []).length;
+
+        const first = wrapper.vm.addFiles([image('photo-1000x500.jpg')]);
+        const second = wrapper.vm.addFiles([image('photo-500x1000.jpg')]);
+
+        await expect(first).resolves.toBe(1);
+        await expect(second).resolves.toBe(0);
+        expect(limits()).toBe(1);
+        expect(wrapper.vm.sortedItems[2].cropper.img.naturalWidth).toBe(1000);
+    });
+});
+
+describe('file input of multiple', () => {
+    it('is no keyboard stop and hidden from screen readers', async () => {
+        const wrapper = mountCropGram({ multiple: true });
+        await nextTick();
+
+        expect(wrapper.find('.cg-file-input').attributes()).toMatchObject({
+            tabindex: '-1', 'aria-hidden': 'true',
+        });
+    });
+});

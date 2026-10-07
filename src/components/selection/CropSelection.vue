@@ -16,6 +16,7 @@
                     :current-view-id="currentViewId"
                     :highest-order="highestOrder"
                     :labels="labels"
+                    :id-base="idBase"
                     @set-view="$emit('set-view', $event)"
                     @update-items="$emit('update-items', $event)"
                     @thumbnail-error="$emit('thumbnail-error', $event)"
@@ -66,6 +67,10 @@ export default {
         },
         labels: {
             type: Object,
+            required: true,
+        },
+        idBase: {
+            type: String,
             required: true,
         },
     },

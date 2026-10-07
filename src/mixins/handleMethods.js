@@ -26,6 +26,11 @@ export default {
             this.addNewCropper(newValue);
         },
         handleFileLoaded() {
+            // The cropper clears the chosen file when it removes the shown image, before
+            // loading-end. addNewCropper() runs after loading-end and needs the name.
+            const file = this.cropper.getChosenFile();
+            this.chosenFileName = file ? file.name : '';
+
             this.$emit('file-loaded');
 
             if (this.isSortedItemsEmpty) return;

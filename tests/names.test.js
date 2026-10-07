@@ -68,3 +68,16 @@ describe('names of the blobs', () => {
         expect(result).not.toHaveProperty('name');
     });
 });
+
+describe('names with an image in the cropper', () => {
+    it('keeps the name of a file that replaces the shown image', async () => {
+        const wrapper = mountCropGram({ items: ['https://cdn.example.com/a.jpg'] });
+        await nextTick();
+
+        cropperOf(wrapper).vm.loadFile('second.png');
+        await nextTick();
+        const results = await wrapper.vm.save();
+
+        expect(results[1].name).toBe('second.jpg');
+    });
+});

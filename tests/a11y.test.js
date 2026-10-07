@@ -80,3 +80,42 @@ describe('accessibility', () => {
         expect(orderButtons(wrapper)[0].find('.reo-wrapper').attributes('aria-hidden')).toBe('true');
     });
 });
+
+describe('order for screen readers', () => {
+    it('describes the position of a chosen image', async () => {
+        const wrapper = mountCropGram();
+        await nextTick();
+        const description = (index) => {
+            const id = orderButtons(wrapper)[index].attributes('aria-describedby');
+            return id ? wrapper.find(`[id="${id}"]`).text() : undefined;
+        };
+
+        expect(description(0)).toBe('Number 1');
+        expect(description(2)).toBe('Number 3');
+
+        await orderButtons(wrapper)[0].trigger('click');
+
+        expect(description(0)).toBeUndefined();
+        expect(description(2)).toBe('Number 2');
+        expect(orderButtons(wrapper)[2].attributes('aria-label')).toBe('Choose image 3');
+    });
+
+    it('gives each description its own id, also with two components', async () => {
+        const one = mountCropGram();
+        const two = mountCropGram();
+        await nextTick();
+
+        const ids = [...one.findAll('[aria-describedby]'), ...two.findAll('[aria-describedby]')]
+            .map((button) => button.attributes('aria-describedby'));
+
+        expect(new Set(ids).size).toBe(6);
+    });
+
+    it('takes the text of the position from labels', async () => {
+        const wrapper = mountCropGram({ labels: { position: 'Platz {order}' } });
+        await nextTick();
+        const id = orderButtons(wrapper)[1].attributes('aria-describedby');
+
+        expect(wrapper.find(`[id="${id}"]`).text()).toBe('Platz 2');
+    });
+});

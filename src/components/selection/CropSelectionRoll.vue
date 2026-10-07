@@ -15,6 +15,7 @@
                 :item="item"
                 :selected="currentViewId"
                 :labels="labels"
+                :order-id="`${idBase}-order-${item.key}`"
                 @toggle="toggleOrder($event)"
                 @set-view="setView($event)"
                 @thumbnail-error="$emit('thumbnail-error', $event)"
@@ -42,6 +43,10 @@ export default {
         },
         labels: {
             type: Object,
+            required: true,
+        },
+        idBase: {
+            type: String,
             required: true,
         },
     },

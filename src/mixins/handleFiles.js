@@ -58,14 +58,26 @@ export default {
         },
         /**
          * Adds image files, for example from a file input with multiple or from a drop.
-         * Files over itemsLimit are left out. Shows the first new image.
+         * Files over itemsLimit are left out. Shows the first new image. A second call waits
+         * for the first one, so the order and the limit stay right.
          *
          * @param  {FileList|File[]} files
          * @return {Promise<number>} [The number of added images]
          */
-        async addFiles(files) {
+        addFiles(files) {
+            // A FileList of a drop or an input can be empty later, so copy it now
+            const list = Array.from(files);
+            const run = () => this.addFilesInOrder(list);
+
+            this.fileQueue = (this.fileQueue || Promise.resolve()).then(run, run);
+
+            return this.fileQueue;
+        },
+        async addFilesInOrder(files) {
+            if (this.isUnmounted) return 0;
+
             const space = this.itemsLimit - this.sortedItemsCount;
-            const valid = Array.from(files).filter(this.isValidFile);
+            const valid = files.filter(this.isValidFile);
 
             if (valid.length > space) this.$emit('limit-reached');
 

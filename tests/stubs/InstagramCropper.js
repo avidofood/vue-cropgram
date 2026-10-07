@@ -84,6 +84,7 @@ export default defineComponent({
             }
 
             this.$emit('draw');
+            this.$emit('new-image-drawn');
         },
         getChosenFile() {
             return this.chosenFile;
@@ -123,9 +124,12 @@ export default defineComponent({
         },
         // Test helper: the user chose a file, and the cropper loaded it
         loadFile(name) {
+            const replaces = this.img !== null;
             this.chosenFile = new File(['image'], name, { type: 'image/jpeg' });
             this.$emit('file-choose', this.chosenFile);
             this.$emit('file-loaded');
+            // The real cropper removes the shown image first, and that clears the chosen file
+            if (replaces) this.chosenFile = undefined;
             this.img = createImage(name);
             this.imgData = {
                 width: 600, height: 400, startX: 0, startY: 100,

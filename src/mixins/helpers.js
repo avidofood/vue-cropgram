@@ -44,7 +44,9 @@ export default {
 
             if (item.cropper.img) return img === item.cropper.img;
 
+            // During a reload of the same URL, the cropper still shows the image of another item
             return Boolean(item.url)
+                && !this.$refs.view.reloading
                 && withoutCacheBreak(img.src) === withoutCacheBreak(cropperUrl(item));
         },
         /**

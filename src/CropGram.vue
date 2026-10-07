@@ -28,6 +28,8 @@
             accept="image/*"
             multiple
             class="cg-file-input"
+            tabindex="-1"
+            aria-hidden="true"
             @change="handleFileInput"
         >
 
@@ -39,6 +41,7 @@
             :current-view-id="currentViewId"
             :highest-order="highestOrder"
             :labels="texts"
+            :id-base="idBase"
             @set-view="setView"
             @update-items="updateItems"
             @choose-file="chooseFile"
@@ -49,6 +52,9 @@
 
 <script>
 import props from './core/props';
+
+// Gives each CropGram its own ids for aria-describedby
+let instances = 0;
 import emits, { cropperEvents } from './core/events';
 import { defaultLabels } from './core/labels';
 import CropView from './components/view/CropView.vue';
@@ -89,6 +95,10 @@ export default {
             nextKey: 0,
             // addFiles() loads files after an await
             isUnmounted: false,
+            // Runs one addFiles() after the other
+            fileQueue: null,
+            // The name of the file that the cropper loads, see handleFileLoaded()
+            chosenFileName: '',
         };
     },
     computed: {
@@ -100,6 +110,10 @@ export default {
                 (name) => [name, (...args) => this.$emit(name, ...args)],
             ));
         },
+    },
+    created() {
+        instances += 1;
+        this.idBase = `cropgram-${instances}`;
     },
     mounted() {
         this.items.forEach(
@@ -171,15 +185,13 @@ export default {
                 return;
             }
 
-            const file = this.cropper.getChosenFile();
-
             this.addItem(
                 this.highestOrder + 1,
                 this.getCurrentCropperThumbnail(),
                 cropper,
                 '',
                 true,
-                file ? file.name : '',
+                this.chosenFileName,
             );
 
             this.setViewId(nextId);
