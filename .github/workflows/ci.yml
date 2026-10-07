@@ -13,12 +13,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        # jsdom 30 needs Node ^22.22.2 or ^24.15.0
         node: [22, 24]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node }}
+          # Without it, the runner can use an older cached Node, for example 22.21
+          check-latest: true
           cache: npm
       - run: npm ci
       - run: npm run lint

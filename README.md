@@ -284,7 +284,7 @@ I have only limited time to develop this package further. If you help me to impr
 
 ## Development
 
-You need Node.js 22.12 or newer (see `.nvmrc`).
+You need Node.js 22.22.2 or newer in the 22 line, or 24.15 or newer (see `.nvmrc`). jsdom 30 needs these versions for the tests.
 
 ```bash
 npm install

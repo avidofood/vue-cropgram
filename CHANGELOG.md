@@ -53,7 +53,7 @@ Version 2.0 works with Vue 3. The README has a section "Migration from 1.x to 2.
 - `chooseFile()` at `itemsLimit` emits `limit-reached` and opens no file dialog. Before, the chosen file replaced the current image in the cropper, and `save()` sometimes returned it in place of the current image.
 - `vue` (`^3.2.0`) is a peer dependency.
 - The package declares `"type": "commonjs"` and `"exports"` with `types` conditions.
-- The build uses Vite 8. Tests use Vitest. Lint uses ESLint 9 and eslint-config-avidofood 4. The development tools need Node.js 22.12 or newer. The published files have no Node.js requirement.
+- The build uses Vite 8. Tests use Vitest. Lint uses ESLint 9 and eslint-config-avidofood 4. The development tools need Node.js 22.22.2 or newer in the 22 line, or 24.15 or newer. The published files have no Node.js requirement.
 - The CSS stays in the JavaScript file, as in 1.x. The styles are plain CSS instead of SCSS.
 - `npm pack` and `npm publish` build `dist/` first (`prepack`). The repository no longer contains `dist/`.
 - A `Release` workflow publishes version tags to npm with trusted publishing.
