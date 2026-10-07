@@ -155,6 +155,24 @@ The add button and `chooseFile()` let the user choose several files at once ([#5
 ```html
 <crop-gram multiple :items-limit="10" />
 ```
+
+- `labels` (default: `{}`, type: Object)
+
+Texts for screen readers, for example in your language. `{index}` is the number of the image, starting at 1. A text that you leave out keeps its default.
+
+```html
+<crop-gram :labels="{ add: 'Bilder hinzufügen', image: 'Bild {index}', choose: 'Bild {index} auswählen' }" />
+```
+
+| Key | Default | Where |
+|---|---|---|
+| `add` | `Add images` | name of the add button |
+| `image` | `Image {index}` | alt text of a thumbnail |
+| `choose` | `Choose image {index}` | name of the button with the order number |
+
+### Accessibility
+
+The thumbnails, the order numbers and the add button are buttons. Keyboard users reach them with Tab and use them with Enter or Space. The current thumbnail has `aria-current="true"`. The button with the order number has `aria-pressed`, which is `true` for a chosen image. The add button keeps its focus ring for the keyboard.
  
 
 
@@ -204,7 +222,7 @@ async function upload() {
 </template>
 ```
 
-- `save()`: Returns a promise with an array of objects, one for each chosen image in its order. An unchanged image from `items` gives `{ url }`. A chosen file, or an image that you moved or zoomed, gives `{ blob, name }`. `name` is the name of the chosen file or the last part of the URL, with the extension of the blob type, for example `holiday.jpg`. A data URL gives no `name`. If the browser cannot create an image, for example because the cropper has no size, the promise rejects with an error. Here is an example how you can send this to your backend:
+- `save()`: Returns a promise with an array of objects, one for each chosen image in its order. An unchanged image from `items` gives `{ url }`. A chosen file, or an image that you moved or zoomed, gives `{ blob, name }`. `name` is the name of the chosen file or the last part of the URL. Its extension follows the blob type, for example `holiday.jpg`. A data URL gives no `name`. If the browser cannot create an image, for example because the cropper has no size, the promise rejects with an error. Here is an example how you can send this to your backend:
 
 ```javascript
 async createFormData() {
@@ -248,7 +266,8 @@ Version 2.0 works with Vue 3. These are the changes for your code:
 7. `save()` returns what you see. It uses the latest crop of the current image. `blob` is always a `Blob`. Before, it was sometimes a pending promise or `null`. If the browser cannot create an image, `save()` now rejects with an error. An unchanged image from `items` stays a `{ url }` after you looked at it. If you called `updateCurrentSortedItem()` before `save()` as a workaround ([#6](https://github.com/avidofood/vue-cropgram/issues/6)), you can remove that call.
 8. `chooseFile()` at `itemsLimit` emits `limit-reached` and opens no file dialog. In 1.x, it opened the dialog, and the chosen file replaced the current image in the cropper.
 9. The package files changed. `dist/index.common.js`, `dist/index.umd.js` and `dist/index.umd.min.js` are now `dist/vue-cropgram.mjs` (ES module) and `dist/vue-cropgram.umd.js` (UMD and CommonJS). The package no longer contains `src/`. Import from `vue-cropgram` only.
-10. The UMD build does not contain the cropper anymore. In a `<script>` tag setup, load Vue, then the UMD build of vue-instagram-cropper 2.x, then `vue-cropgram.umd.js`. The global name is `VueCropgram`. In 1.x, it was `index`.
+10. The thumbnails and the order numbers are buttons now. A thumbnail is `button.roll-element-view` with the `img` inside. The order number is `button.roll-element-order`. The classes and the look did not change. If your CSS selects `.roll-element > img`, change it to `.roll-element img`.
+11. The UMD build does not contain the cropper anymore. In a `<script>` tag setup, load Vue, then the UMD build of vue-instagram-cropper 2.x, then `vue-cropgram.umd.js`. The global name is `VueCropgram`. In 1.x, it was `index`.
 
 ## TODO
 

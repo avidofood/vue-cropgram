@@ -24,6 +24,16 @@ export type CropGramResult =
  */
 export type CropGramCropData = InstagramCropperMetadata | InstagramCropperEmptyMetadata;
 
+/** Texts for screen readers. {index} is the number of the image, starting at 1. */
+export interface CropGramLabels {
+    /** The add button. Default: 'Add images'. */
+    add?: string;
+    /** The alt text of a thumbnail. Default: 'Image {index}'. */
+    image?: string;
+    /** The button with the order number. Default: 'Choose image {index}'. */
+    choose?: string;
+}
+
 export interface CropGramProps {
     /** Shows the cropper. With `false`, the selection stays visible. Default: true. */
     showCropper?: boolean;
@@ -41,6 +51,8 @@ export interface CropGramProps {
     itemsLimit?: number;
     /** The add button and chooseFile() let the user choose several files at once. Default: false. */
     multiple?: boolean;
+    /** Texts for screen readers. A text that you leave out keeps its default. */
+    labels?: CropGramLabels;
 }
 
 /**
@@ -112,6 +124,7 @@ type CropGramPropOptions = CropGramCropperPropOptions & {
     selectionTextClass: { type: PropType<string>; default: string };
     itemsLimit: { type: PropType<number>; default: number };
     multiple: { type: PropType<boolean>; default: boolean };
+    labels: { type: PropType<CropGramLabels>; default: () => CropGramLabels };
 };
 
 declare const CropGram: DefineComponent<

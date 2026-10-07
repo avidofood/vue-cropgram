@@ -13,6 +13,7 @@ Version 2.0 works with Vue 3. The README has a section "Migration from 1.x to 2.
 - The plugin registers the component on the app as `CropGram`. The tag `<crop-gram>` still works.
 - `class` and `style` stay on the root element. All other attributes and listeners go only to the cropper. In 1.x, other attributes were also on the root element and on the `<form>` around the cropper.
 - The package files changed. The ES module is `dist/vue-cropgram.mjs`, the UMD and CommonJS build is `dist/vue-cropgram.umd.js`. The files `dist/index.common.js`, `dist/index.umd.js`, `dist/index.umd.min.js` and the folder `src/` are no longer in the package.
+- The thumbnails and the order numbers are buttons (`button.roll-element-view` with the `img` inside, `button.roll-element-order`). The classes and the look are the same. CSS that selects `.roll-element > img` needs `.roll-element img`.
 - The UMD build no longer contains the cropper. Load the UMD build of vue-instagram-cropper 2.x first. The global name of the UMD build is `VueCropgram`. In 1.x, it was `index`.
 
 ### Added
@@ -23,6 +24,7 @@ Version 2.0 works with Vue 3. The README has a section "Migration from 1.x to 2.
 - A section about the size of the cropper in the README ([#27](https://github.com/avidofood/vue-cropgram/issues/27)).
 - Choose several files at once: with the prop `multiple`, the add button and `chooseFile()` open a file dialog for several files ([#5](https://github.com/avidofood/vue-cropgram/issues/5)). Each new image fills the cropper and is centered, as a chosen file in the cropper.
 - A blob in the result of `save()` has a `name`: the name of the chosen file or the last part of the URL, with the extension of the blob type. Pass it to `FormData.append()`, which otherwise calls the file "blob".
+- Accessibility: the thumbnails and the order numbers are buttons with names, so keyboard and screen reader users can use them. The order number has `aria-pressed`, the current thumbnail has `aria-current`. The add button has a name and keeps its focus ring for the keyboard. The prop `labels` sets the texts, for example in another language.
 - `addFiles(files)` adds image files, for example from your own drop zone. Files that do not fit emit the events of the cropper with the file, and the other files are added. For a file that does not load, `image-error` carries the file.
 
 ### Fixed

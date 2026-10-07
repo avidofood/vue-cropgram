@@ -1,16 +1,29 @@
 <template>
     <div>
-        <img
-            :src="item.thumbnail"
-            :class="[index === selected ? 'active': '']"
+        <button
+            type="button"
+            class="roll-element-view"
+            :aria-current="index === selected ? 'true' : undefined"
             @click="$emit('set-view', index)"
-            @error="$emit('thumbnail-error', index)"
         >
-        <div
+            <img
+                :src="item.thumbnail"
+                :alt="withIndex(labels.image, index)"
+                :class="[index === selected ? 'active': '']"
+                @error="$emit('thumbnail-error', index)"
+            >
+        </button>
+        <button
+            type="button"
             class="roll-element-order"
+            :aria-label="withIndex(labels.choose, index)"
+            :aria-pressed="item.order > 0 ? 'true' : 'false'"
             @click.prevent.stop="$emit('toggle', index)"
         >
-            <span class="reo-wrapper">
+            <span
+                class="reo-wrapper"
+                aria-hidden="true"
+            >
                 <span
                     class="reo-circle"
                     :class="item.order > 0 ? 'clicked' : 'unclicked'"
@@ -20,10 +33,12 @@
                     v-text="item.order > 0 ? item.order : ''"
                 />
             </span>
-        </div>
+        </button>
     </div>
 </template>
 <script>
+import { withIndex } from '../../core/labels';
+
 export default {
     props: {
         item: {
@@ -38,11 +53,36 @@ export default {
             type: Number,
             required: true,
         },
+        labels: {
+            type: Object,
+            required: true,
+        },
     },
     emits: ['set-view', 'thumbnail-error', 'toggle'],
+    methods: {
+        withIndex,
+    },
 };
 </script>
 <style scoped>
+/* The buttons look like the image and the circle of 1.x */
+.roll-element-view,
+.roll-element-order {
+    padding: 0;
+    border: 0;
+    margin: 0;
+    background: none;
+    font: inherit;
+    line-height: inherit;
+    text-align: inherit;
+    cursor: pointer;
+}
+.roll-element-view {
+    display: block;
+    width: 60px;
+    height: 60px;
+}
+
 img {
     position: relative;
     transition: all .2s linear;
@@ -61,6 +101,7 @@ img:hover {
 }
 
 .roll-element-order {
+    display: block;
     position: absolute;
     top: 0px;
     right: 2px;

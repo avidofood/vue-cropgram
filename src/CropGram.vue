@@ -38,6 +38,7 @@
             :selection-text-class="selectionTextClass"
             :current-view-id="currentViewId"
             :highest-order="highestOrder"
+            :labels="texts"
             @set-view="setView"
             @update-items="updateItems"
             @choose-file="chooseFile"
@@ -49,6 +50,7 @@
 <script>
 import props from './core/props';
 import emits, { cropperEvents } from './core/events';
+import { defaultLabels } from './core/labels';
 import CropView from './components/view/CropView.vue';
 import CropSelection from './components/selection/CropSelection.vue';
 
@@ -90,6 +92,9 @@ export default {
         };
     },
     computed: {
+        texts() {
+            return { ...defaultLabels, ...this.labels };
+        },
         forwardedListeners() {
             return Object.fromEntries(cropperEvents.map(
                 (name) => [name, (...args) => this.$emit(name, ...args)],

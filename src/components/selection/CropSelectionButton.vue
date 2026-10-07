@@ -3,11 +3,14 @@
     <button
         type="button"
         class="cg-btn-upload"
+        :aria-label="label"
         @click="$emit('clicked')"
     >
         <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 661.14 532.74"
+            aria-hidden="true"
+            focusable="false"
         >
             <path
                 style="fill:none;"
@@ -27,6 +30,12 @@
 
 <script>
 export default {
+    props: {
+        label: {
+            type: String,
+            required: true,
+        },
+    },
     emits: ['clicked'],
 };
 </script>
@@ -65,7 +74,8 @@ export default {
 .cg-btn-upload:hover:before {
     opacity: 1;
 }
-.cg-btn-upload:focus {
+/* Keyboard users keep the focus ring */
+.cg-btn-upload:focus:not(:focus-visible) {
     outline: 0;
     box-shadow: none;
 }

@@ -24,6 +24,11 @@ export default {
         type: String,
         default: '',
     },
+    // Texts for screen readers: add, image and choose. {index} is the number of the image.
+    labels: {
+        type: Object,
+        default: () => ({}),
+    },
     // The add button and chooseFile() let the user choose several files at once
     multiple: {
         type: Boolean,

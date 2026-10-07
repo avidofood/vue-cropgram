@@ -15,6 +15,7 @@
                     :items="items"
                     :current-view-id="currentViewId"
                     :highest-order="highestOrder"
+                    :labels="labels"
                     @set-view="$emit('set-view', $event)"
                     @update-items="$emit('update-items', $event)"
                     @thumbnail-error="$emit('thumbnail-error', $event)"
@@ -22,6 +23,7 @@
 
                 <selection-button
                     v-if="items.length < itemsLimit"
+                    :label="labels.add"
                     @clicked="$emit('choose-file')"
                 />
             </div>
@@ -60,6 +62,10 @@ export default {
         },
         highestOrder: {
             type: Number,
+            required: true,
+        },
+        labels: {
+            type: Object,
             required: true,
         },
     },

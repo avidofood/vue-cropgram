@@ -14,6 +14,7 @@
                 :index="index"
                 :item="item"
                 :selected="currentViewId"
+                :labels="labels"
                 @toggle="toggleOrder($event)"
                 @set-view="setView($event)"
                 @thumbnail-error="$emit('thumbnail-error', $event)"
@@ -37,6 +38,10 @@ export default {
         },
         highestOrder: {
             type: Number,
+            required: true,
+        },
+        labels: {
+            type: Object,
             required: true,
         },
     },
