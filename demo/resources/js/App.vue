@@ -22,6 +22,7 @@
             <div class="bg-white p-4 rounded cropper-wrapper">
                 <crop-gram
                     :items="pictures"
+                    multiple
                     placeholder-color="#000000"
                     placeholder="Choose or Drag'n'Drop an image"
                     :placeholder-font-size="14"
