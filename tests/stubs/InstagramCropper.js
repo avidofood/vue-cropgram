@@ -27,6 +27,10 @@ export default defineComponent({
             type: [Object, String],
             required: false,
         },
+        fileSizeLimit: {
+            type: Number,
+            default: 0,
+        },
     },
     emits: events,
     data() {
@@ -95,6 +99,7 @@ export default defineComponent({
         // The blob describes its input, so tests can check what CropGram saved
         saving(img, imgData, outputWidth, outputHeight) {
             return {
+                generateDataUrl: () => `data:image/png;crop=${imgData.width}x${imgData.height}`,
                 // Like canvas.toBlob(), it gives null for a canvas without a size
                 promisedBlob: (mimeType, compression) => {
                     if (outputWidth === 0) return Promise.resolve(null);

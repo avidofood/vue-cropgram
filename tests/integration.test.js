@@ -186,3 +186,33 @@ describe('URLs with the real cropper', () => {
         }
     });
 });
+
+describe('addFiles() with the real cropper', () => {
+    it('places a file like the cropper places a chosen file', async () => {
+        URL.createObjectURL = vi.fn(() => 'blob:https://example.com/photo');
+        URL.revokeObjectURL = vi.fn();
+        const wrapper = mountCropGram({ items: [] });
+        await vi.waitFor(() => {
+            if (!cropperOf(wrapper).outputWidth) throw new Error('no size yet');
+        });
+        const file = () => new File([new Uint8Array([0xFF, 0xD8, 0xFF, 0xD9])], 'photo.jpg', { type: 'image/jpeg' });
+
+        // The file chooser of the cropper
+        const input = wrapper.find('.cropper-container input[type="file"]');
+        Object.defineProperty(input.element, 'files', { value: [file()], configurable: true });
+        await input.trigger('change');
+        await vi.waitFor(() => {
+            if (!wrapper.emitted('new-image')) throw new Error('no new image yet');
+        });
+        await settle();
+
+        // The same image through addFiles()
+        await wrapper.vm.addFiles([file()]);
+        await settle();
+
+        const [chosen, added] = wrapper.vm.sortedItems.map((item) => item.cropper.imgData);
+        expect(added).toEqual(chosen);
+        const results = await wrapper.vm.save();
+        expect(results.map((result) => result.blob.size > 0)).toEqual([true, true]);
+    });
+});

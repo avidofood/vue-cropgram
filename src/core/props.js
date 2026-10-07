@@ -24,6 +24,11 @@ export default {
         type: String,
         default: '',
     },
+    // The add button and chooseFile() let the user choose several files at once
+    multiple: {
+        type: Boolean,
+        default: false,
+    },
     itemsLimit: {
         type: Number,
         default: 4,

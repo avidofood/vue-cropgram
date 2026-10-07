@@ -21,6 +21,16 @@
             <slot />
         </div>
 
+        <input
+            v-if="multiple"
+            ref="files"
+            type="file"
+            accept="image/*"
+            multiple
+            class="cg-file-input"
+            @change="handleFileInput"
+        >
+
         <crop-selection
             :items="sortedItems"
             :items-limit="itemsLimit"
@@ -43,6 +53,7 @@ import CropView from './components/view/CropView.vue';
 import CropSelection from './components/selection/CropSelection.vue';
 
 import collection from './mixins/collection';
+import handleFiles from './mixins/handleFiles';
 import handleMethods from './mixins/handleMethods';
 import handleSaving from './mixins/handleSaving';
 import helpers from './mixins/helpers';
@@ -54,6 +65,7 @@ export default {
     },
     mixins: [
         collection,
+        handleFiles,
         handleMethods,
         handleSaving,
         helpers,
@@ -73,6 +85,8 @@ export default {
             restoredSrc: null,
             // Gives every item a key, see lib/cropperUrl.js
             nextKey: 0,
+            // addFiles() loads files after an await
+            isUnmounted: false,
         };
     },
     computed: {
@@ -90,6 +104,9 @@ export default {
         this.updateCurrentView();
 
         this.cropper = this.$refs.view.$refs.cropper;
+    },
+    beforeUnmount() {
+        this.isUnmounted = true;
     },
     methods: {
         cropperAttrs() {
@@ -193,7 +210,12 @@ export default {
                 return;
             }
 
-            this.cropper.chooseFile();
+            if (this.multiple) {
+                this.$refs.files.click();
+            } else {
+                this.cropper.chooseFile();
+            }
+
             this.$emit('choose-file-button');
         },
         getCurrentCropperThumbnail() {
@@ -205,3 +227,14 @@ export default {
     },
 };
 </script>
+
+<style scoped>
+/* Hidden like the file input of the cropper. Some browsers do not open a hidden input. */
+.cg-file-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    margin-left: -99999px;
+}
+</style>

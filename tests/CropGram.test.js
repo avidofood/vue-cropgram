@@ -329,8 +329,9 @@ describe('attributes', () => {
         await nextTick();
 
         expect(cropperOf(wrapper).attributes()).toMatchObject({
-            placeholder: 'Choose', canvascolor: '#000', filesizelimit: '1024',
+            placeholder: 'Choose', canvascolor: '#000',
         });
+        expect(cropperOf(wrapper).props('fileSizeLimit')).toBe(1024);
         expect(wrapper.attributes('placeholder')).toBeUndefined();
         expect(wrapper.find('.cp-view').attributes('placeholder')).toBeUndefined();
     });

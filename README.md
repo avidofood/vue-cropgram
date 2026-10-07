@@ -147,6 +147,14 @@ CropGram gives the cropper an absolute URL with a fragment, for example `https:/
 - `itemsLimit` (default: `4`, type: Number)
   
 Limits how many images can be choosen.
+
+- `multiple` (default: `false`, type: Boolean)
+
+The add button and `chooseFile()` let the user choose several files at once ([#5](https://github.com/avidofood/vue-cropgram/issues/5)). CropGram places each new image like the cropper places a chosen file: the image fills the cropper and is centered. If more files come than `itemsLimit` allows, CropGram adds the first ones and emits `limit-reached`. A click on the empty cropper or a drop on it still chooses one file.
+
+```html
+<crop-gram multiple :items-limit="10" />
+```
  
 
 
@@ -214,6 +222,13 @@ async createFormData() {
 - `chooseFile()`: Opens the file dialog. At `itemsLimit`, it emits `limit-reached` and opens no dialog.
 - `setView(id)`: Sets a view with index
 - `addNewUrl(url)`: Sets an image via URL
+- `addFiles(files)`: Adds image files, for example from your own drop zone, and shows the first new one. `files` is a `FileList` or an array of `File`. It works also without `multiple`. The promise resolves with the number of added images. For a file that does not fit, CropGram emits the event of the cropper with the file: `file-type-mismatch`, `file-size-exceed` (with `file-size-limit`) or `image-error`. The other files are added.
+
+```javascript
+async onDrop(event) {
+   await this.$refs.cropgram.addFiles(event.dataTransfer.files);
+},
+```
 
 ## Migration from 1.x to 2.x
 
@@ -238,7 +253,6 @@ I have only limited time to develop this package further. If you help me to impr
 - If you have multiple images and you remove one, you will see in a tiny fraction the placeholder text.
 - We need to lock the image aspect ratio. For that we need to add a the prop `forceAspect` but for [vue-instagram-cropper](https://github.com/avidofood/vue-instagram-cropper#todo). 
 - Do we need private methods like in [vue-instagram-cropper](https://github.com/avidofood/vue-instagram-cropper)?
-- Choose more than one file at once ([#5](https://github.com/avidofood/vue-cropgram/issues/5)).
 
 ## Development
 

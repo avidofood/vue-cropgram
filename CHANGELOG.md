@@ -21,6 +21,8 @@ Version 2.0 works with Vue 3. The README has a section "Migration from 1.x to 2.
 - The events of the cropper carry their arguments. For example, `file-choose`, `file-size-exceed` and `file-type-mismatch` carry the file. `init` carries the cropper, and `draw` carries the canvas context.
 - Listeners for cropper events that CropGram does not emit itself, for example `@image-remove-onload`, reach the cropper.
 - A section about the size of the cropper in the README ([#27](https://github.com/avidofood/vue-cropgram/issues/27)).
+- Choose several files at once: with the prop `multiple`, the add button and `chooseFile()` open a file dialog for several files ([#5](https://github.com/avidofood/vue-cropgram/issues/5)). Each new image fills the cropper and is centered, as a chosen file in the cropper.
+- `addFiles(files)` adds image files, for example from your own drop zone. Files that do not fit emit the events of the cropper with the file, and the other files are added. For a file that does not load, `image-error` carries the file.
 
 ### Fixed
 

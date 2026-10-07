@@ -20,6 +20,7 @@ const props: CropGramProps = {
     compression: 0.9,
     selectionText: 'Your images',
     showCropper: false,
+    multiple: true,
 };
 
 const cropperProps: CropGramCropperProps = {
@@ -35,6 +36,7 @@ h(CropGram, {
     onUpdate: (cropData: CropGramCropData) => cropData.img?.src ?? cropData.imgData.startX,
     onSetView: (id: number) => id,
     onThumbnailError: (index: number) => index,
+    onImageError: (file?: File) => file?.name,
     'onFile-size-exceed': (file: File) => file.size,
 });
 
@@ -57,6 +59,12 @@ const thumbnail: string = instance.getCurrentCropperThumbnail();
 instance.chooseFile();
 instance.setView(1);
 instance.addNewUrl('/images/b.jpg');
+declare const fileList: FileList;
+const added: Promise<number> = instance.addFiles(fileList);
+instance.addFiles([new File([], 'a.jpg')]);
+
+// @ts-expect-error addFiles needs files
+instance.addFiles(['/images/a.jpg']);
 
 // The README example: append each result to a FormData
 saved.then((results) => {
@@ -71,5 +79,5 @@ saved.then((results) => {
 const global: typeof CropGram = {} as GlobalComponents['CropGram'];
 
 export {
-    methods, thumbnail, global, withSrc,
+    methods, thumbnail, global, withSrc, added,
 };

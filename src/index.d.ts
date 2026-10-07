@@ -36,6 +36,8 @@ export interface CropGramProps {
     selectionTextClass?: string;
     /** The maximum number of images. Default: 4. */
     itemsLimit?: number;
+    /** The add button and chooseFile() let the user choose several files at once. Default: false. */
+    multiple?: boolean;
 }
 
 /**
@@ -55,6 +57,11 @@ export type CropGramMethods = {
     setView(id: number): void;
     /** Adds an image from a URL and shows it. */
     addNewUrl(url: string): void;
+    /**
+     * Adds image files and shows the first new one. Files over itemsLimit are left out.
+     * Resolves with the number of added images.
+     */
+    addFiles(files: FileList | File[]): Promise<number>;
 };
 
 export type CropGramEmits = {
@@ -70,7 +77,8 @@ export type CropGramEmits = {
     'initial-image-loaded': () => void;
     'loading-start': () => void;
     'loading-end': () => void;
-    'image-error': () => void;
+    /** An image did not load. For a file from addFiles(), the event carries the file. */
+    'image-error': (file?: File) => void;
     'image-remove': () => void;
     move: () => void;
     zoom: () => void;
@@ -100,6 +108,7 @@ type CropGramPropOptions = CropGramCropperPropOptions & {
     selectionText: { type: PropType<string>; default: string };
     selectionTextClass: { type: PropType<string>; default: string };
     itemsLimit: { type: PropType<number>; default: number };
+    multiple: { type: PropType<boolean>; default: boolean };
 };
 
 declare const CropGram: DefineComponent<
