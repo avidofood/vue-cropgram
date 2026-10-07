@@ -1,8 +1,10 @@
 // Compile-time checks for src/index.d.ts. Run with: npm run test:types
 import { createApp, h, type GlobalComponents } from 'vue';
+import type { InstagramCropperInstance } from 'vue-instagram-cropper';
 import CropGram, {
     Plugin,
     type CropGramCropData,
+    type CropGramCropperProps,
     type CropGramMethods,
     type CropGramProps,
     type CropGramResult,
@@ -20,11 +22,17 @@ const props: CropGramProps = {
     showCropper: false,
 };
 
-h(CropGram, {
-    ...props,
+const cropperProps: CropGramCropperProps = {
     placeholder: 'Choose an image',
     fileSizeLimit: 20000 * 1024,
-    onUpdate: (cropData: CropGramCropData) => cropData.imgData.startX,
+    preventWhiteSpace: true,
+};
+
+h(CropGram, {
+    ...props,
+    ...cropperProps,
+    onInit: (cropper: InstagramCropperInstance) => cropper.chooseFile(),
+    onUpdate: (cropData: CropGramCropData) => cropData.img?.src ?? cropData.imgData.startX,
     onSetView: (id: number) => id,
     onThumbnailError: (index: number) => index,
     'onFile-size-exceed': (file: File) => file.size,
@@ -35,6 +43,12 @@ h(CropGram, { itemsLimit: 'four' });
 
 // @ts-expect-error items are URLs
 h(CropGram, { items: [{ url: '/images/a.jpg' }] });
+
+// @ts-expect-error placeholderFontSize of the cropper is a number
+h(CropGram, { placeholderFontSize: 'big' });
+
+// @ts-expect-error CropGram sets src of the cropper itself
+const withSrc: CropGramCropperProps = { src: '/images/a.jpg' };
 
 declare const instance: InstanceType<typeof CropGram>;
 const methods: CropGramMethods = instance;
@@ -57,5 +71,5 @@ saved.then((results) => {
 const global: typeof CropGram = {} as GlobalComponents['CropGram'];
 
 export {
-    methods, thumbnail, global,
+    methods, thumbnail, global, withSrc,
 };
