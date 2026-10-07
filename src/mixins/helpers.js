@@ -24,13 +24,21 @@ export default {
         },
         updateCurrentView() {
             this.currentView = this.sortedItem(this.currentViewId);
+
+            // The cropper can show this image already, for example a newly added file, or after
+            // a switch back before the other image loaded. Then the stored crop is no restore.
+            const item = this.currentView;
+
+            if (item && item.cropper.img && this.cropperShows(item)) {
+                this.restoredSrc = item.cropper;
+            }
         },
         /**
          * True if the cropper shows the image of this item. While the cropper loads the image of
          * a new view, it still shows the previous image.
          */
         cropperShows(item) {
-            if (!item || !this.cropper.hasImage()) return false;
+            if (!item || !this.cropper || !this.cropper.hasImage()) return false;
 
             const { img } = this.cropper.getMetadata();
 

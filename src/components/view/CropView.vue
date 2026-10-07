@@ -61,21 +61,34 @@ export default {
         // Not deep: CropGram stores the crop of the current image in the same item. Sending that
         // crop to the cropper again would reload the image and can replace a newly chosen file.
         view: {
-            handler(val) {
-                this.convertCropper(val);
+            handler(val, oldVal) {
+                this.convertCropper(val, oldVal);
             },
             immediate: true,
         },
     },
     methods: {
-        convertCropper(val) {
+        convertCropper(val, oldVal) {
             if (!val) {
                 this.cropper = null;
                 return;
             }
 
             if (Object.entries(val.cropper).length === 0 && val.cropper.constructor === Object) {
-                this.cropper = cropperUrl(val);
+                const src = cropperUrl(val);
+
+                // Another item with the same src, for example the same URL with a fragment twice.
+                // The cropper loads only a new src, so it gets null first. Its debounce of
+                // 30 ms then loads the URL once.
+                if (src === this.cropper && oldVal && oldVal.key !== val.key) {
+                    this.cropper = null;
+                    this.$nextTick(() => {
+                        if (this.view === val) this.cropper = src;
+                    });
+                    return;
+                }
+
+                this.cropper = src;
                 return;
             }
 

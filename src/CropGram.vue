@@ -160,9 +160,6 @@ export default {
 
             this.updateCurrentView();
 
-            // The cropper already shows this image. Its crop is no restore.
-            this.restoredSrc = this.sortedItem(nextId).cropper;
-
             this.$emit('new-image');
 
             this.hasChanged();

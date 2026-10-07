@@ -2,7 +2,7 @@ import {
     describe, expect, it, vi,
 } from 'vitest';
 import { nextTick } from 'vue';
-import { mount } from '@vue/test-utils';
+import { flushPromises, mount } from '@vue/test-utils';
 import CropGram from '../src/index';
 import {
     cropperOf, mountCropGram, orderBadges, orderNumbers, urls,
@@ -357,6 +357,50 @@ describe('short review of the fixes (Codex)', () => {
         await nextTick();
 
         // The second item starts with its own load, not with the crop of the first
+        expect(cropper.imgData.startX).toBe(0);
+        cropper.drag(-10);
+        const results = await wrapper.vm.save();
+        expect(results[0].blob.imgData.startX).toBe(-40);
+        expect(results[1].blob.imgData.startX).toBe(-10);
+    });
+});
+
+describe('open findings of the last short review (Codex)', () => {
+    it('counts a zoom after a switch back before the other image loaded', async () => {
+        const wrapper = mountCropGram({ items: [] });
+        await nextTick();
+        const cropper = cropperOf(wrapper).vm;
+        cropper.loadFile('a.jpg');
+        await nextTick();
+        cropper.loadFile('b.jpg');
+        await nextTick();
+        wrapper.vm.setView(0);
+        await nextTick();
+
+        // B does not load in time, so the cropper still shows A when the view comes back to A
+        cropper.instantLoad = false;
+        wrapper.vm.setView(1);
+        await nextTick();
+        wrapper.vm.setView(0);
+        await nextTick();
+        // The cropper applies the stored crop of A to A: no change, so it does not draw
+        cropper.finishLoad();
+        const changes = wrapper.emitted('has-changed').length;
+        cropper.zoomIn();
+
+        expect(wrapper.emitted('has-changed')).toHaveLength(changes + 1);
+    });
+
+    it('loads an image again when the same URL with a fragment is twice in items', async () => {
+        const url = '/images/a.jpg#preview';
+        const wrapper = mountCropGram({ items: [url, url] });
+        await nextTick();
+        const cropper = cropperOf(wrapper).vm;
+        cropper.drag(-40);
+
+        wrapper.vm.setView(1);
+        await flushPromises();
+
         expect(cropper.imgData.startX).toBe(0);
         cropper.drag(-10);
         const results = await wrapper.vm.save();
