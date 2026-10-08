@@ -3,7 +3,7 @@ import './browser/stubs';
 import {
     afterAll, beforeAll, describe, expect, it, vi,
 } from 'vitest';
-import { mount } from '@vue/test-utils';
+import { flushPromises, mount } from '@vue/test-utils';
 import InstagramCropper from 'vue-instagram-cropper';
 import CropGram from '../src/index';
 import { cropperEvents, handledCropperEvents } from '../src/core/events';
@@ -258,24 +258,37 @@ describe('review of the feature round with the real cropper', () => {
 
 describe('failed reload with the real cropper', () => {
     it('ends the reload after the cropper drew the error image', async () => {
-        const url = 'https://example.com/broken.jpg#preview';
-        const wrapper = mountCropGram({ items: [url, url] });
-        // The cropper loads two images with a 30 ms debounce. Under load, one second is short.
-        const patience = { timeout: 5000 };
-        await vi.waitFor(() => {
-            if (!wrapper.emitted('new-image-drawn')) throw new Error('no error image yet');
-        }, patience);
+        // Fake timers drive the 30 ms debounce of the cropper and the image loads of
+        // tests/browser/stubs.js, so the test checks each state once, in a fixed order.
+        // A URL with "broken" fails to load in the stubs. Nothing goes to the network.
+        vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval'] });
+        try {
+            const url = 'broken.jpg#preview';
+            const wrapper = mountCropGram({ items: [url, url] });
+            await vi.advanceTimersByTimeAsync(100);
+            expect(wrapper.emitted('image-error')).toHaveLength(1);
+            expect(wrapper.emitted('new-image-drawn')).toHaveLength(1);
 
-        wrapper.vm.setView(1);
-        await vi.waitFor(() => {
-            if (!wrapper.vm.$refs.view.reloading) throw new Error('no reload yet');
-        }, patience);
-        await vi.waitFor(() => {
-            if (wrapper.vm.$refs.view.reloading) throw new Error('still reloading');
-        }, patience);
+            wrapper.vm.setView(1);
+            await flushPromises();
+            expect(wrapper.vm.$refs.view.reloading).toBe(true);
 
-        expect(wrapper.emitted('image-error')).toHaveLength(2);
-        expect(wrapper.emitted('new-image-drawn')).toHaveLength(2);
+            // One timer after the other, up to the image-error of the reload
+            for (let step = 0; step < 10 && wrapper.emitted('image-error').length < 2; step += 1) {
+                // eslint-disable-next-line no-await-in-loop
+                await vi.advanceTimersToNextTimerAsync();
+            }
+            // The cropper still shows the image of the other item until it drew its error image
+            expect(wrapper.emitted('image-error')).toHaveLength(2);
+            expect(wrapper.vm.$refs.view.reloading).toBe(true);
+
+            await vi.advanceTimersByTimeAsync(100);
+            expect(wrapper.vm.$refs.view.reloading).toBe(false);
+            expect(wrapper.emitted('image-error')).toHaveLength(2);
+            expect(wrapper.emitted('new-image-drawn')).toHaveLength(2);
+        } finally {
+            vi.useRealTimers();
+        }
     });
 });
 
